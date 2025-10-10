@@ -1,4 +1,9 @@
 echo "🚀 Running pre-push checks..."
-
-pnpm turbo run test --filter=[HEAD^1]
-pnpm turbo run build --filter=[HEAD^1]
+if git rev-parse --verify HEAD^1 >/dev/null 2>&1; then
+  pnpm turbo run test --filter=[HEAD^1]
+  pnpm turbo run build --filter=[HEAD^1]
+else
+  echo "Initial push in branch, running checks for all files..."
+  pnpm turbo run test
+  pnpm turbo run build
+fi
