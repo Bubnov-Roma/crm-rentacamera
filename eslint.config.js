@@ -14,8 +14,6 @@ export default [
       '**/coverage/**',
       '**/*.d.ts',
       '**/public/**',
-      '**/*.config.js',
-      '**/commitlint.config.js',
     ],
   },
 
