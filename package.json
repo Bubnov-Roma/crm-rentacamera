@@ -34,8 +34,8 @@
     "*.{json,md,mdx,css,html,yml,yaml}": [
       "prettier --write"
     ],
-    "*.prisma": [
-      "prisma format"
+    "packages/database/prisma/schema.prisma": [
+      "cd packages/database && prisma format"
     ],
     "*.config.js": [
       "prettier --write"
