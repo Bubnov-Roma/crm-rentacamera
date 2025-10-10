@@ -8,6 +8,9 @@ on:
   schedule:
     - cron: '0 2 * * 1'
 
+env:
+  PNPM_VERSION: '10.18.1'
+
 jobs:
   security:
     name: Security Checks
@@ -21,13 +24,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
+        run: npm install -g pnpm@${{ env.PNPM_VERSION }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
