@@ -33,6 +33,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Debug Turbo version
+        run: |
+          npx turbo --version
+          which turbo
+
       - name: Type Check
         run: pnpm type-check
 
