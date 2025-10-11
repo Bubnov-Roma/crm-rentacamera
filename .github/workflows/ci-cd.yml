@@ -11,7 +11,6 @@ env:
   PNPM_VERSION: '10.18.1'
 
 jobs:
-  # ==================== CODE QUALITY ====================
   quality:
     name: Code Quality
     runs-on: ubuntu-latest
@@ -26,7 +25,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Install pnpm
         run: npm install -g pnpm@${{ env.PNPM_VERSION }}
@@ -43,7 +41,6 @@ jobs:
       - name: Test
         run: pnpm test
 
-  # ==================== BUILD ====================
   build:
     name: Build Packages
     runs-on: ubuntu-latest
@@ -52,8 +49,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -66,10 +61,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build all packages
+      - name: Build packages
         run: pnpm turbo run build
 
-  # ==================== DATABASE ====================
   database:
     name: Database Checks
     runs-on: ubuntu-latest
@@ -85,7 +79,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Install pnpm
         run: npm install -g pnpm@${{ env.PNPM_VERSION }}
@@ -99,4 +92,4 @@ jobs:
 
       - name: Generate Prisma Client
         working-directory: packages/database
-        run: npx prisma validate
+        run: npx prisma generate
