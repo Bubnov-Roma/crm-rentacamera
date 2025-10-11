@@ -18,6 +18,8 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "test": "turbo test",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
     "type-check": "turbo type-check",
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
