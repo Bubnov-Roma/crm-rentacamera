@@ -1,0 +1,39 @@
+name: Automated Weekly Report
+
+on:
+  schedule:
+    - cron: '0 18 * * 5'
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for accurate stats
+
+      - name: Generate Statistics
+        run: |
+          echo "## 📈 Weekly Statistics"
+          echo ""
+          echo "### Commits this week:"
+          git log --since="1 week ago" --oneline | wc -l
+          echo ""
+          echo "### Recent activity:"
+          git log --since="1 week ago" --oneline -5
+
+      - name: Create Summary Issue
+        uses: actions/github-script@v6
+        env:
+          COMMIT_COUNT: ${{ steps.stats.outputs.commit_count }}
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Auto Report - ${new Date().toISOString().split('T')[0]}`,
+              body: `Generated weekly progress report...`,
+              labels: ['auto-report']
+            })
