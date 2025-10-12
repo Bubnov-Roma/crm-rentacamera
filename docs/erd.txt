@@ -1,0 +1,86 @@
+crm-rentacamera/
+├── .github/
+│   ├── dependabot.yml
+│   ├── pull_request_template.md
+│   ├── state.yml
+│   └── workflows/
+│       ├── auto-assign.yml
+│       ├── auto-deploy.yml
+│       ├── ci-cd.yml
+│       ├── daily-standup.yml
+│       ├── labeler.yml
+│       ├── manual-approval.yml
+│       ├── security.yml
+│       └── weekly-progress.yml
+├── .husky/ 
+│   ├── _
+│   ├── commit-msg
+│   ├── pre-commit
+│   └── pre-push
+├── apps/
+│   ├── web/ (Next.js 15.5.4) - client site
+│   │   ├── .eslintrc.json
+│   │   ├── next-env.d.ts
+│   │   ├── next.config.js
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.tsbuildinfo
+│   │   └── src/
+│   │       └── app/
+│   │            ├── layout.tsx
+│   │            └── page.tsx
+│   ├── admin/ (Next.js 15.5.4) - admin panel
+│   └── mobile/ (PWA) - mobile app
+├── docs/
+│   ├── erd.txt (this file)
+│   ├── every_day_process.md
+│   └── context_backup.md
+├── packages/
+│   ├── ui/ - shared components (Ant Design + custom)
+│   │   ├── src/
+│   │   │   ├── components/
+│   │   │   │   └── TestComponent.tsx
+│   │   │   └── index.ts
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── vite.config.json
+│   ├── utils/ - utils
+│   ├── database/ - Prisma + schema
+│   │   ├── prisma
+│   │   │    └── schema.prisma
+│   │   ├── src/
+│   │   │    └── index.ts
+│   │   ├── .env
+│   │   └── package.json
+│   ├── contracts/ - smart-contracts
+│   └── core/ - domain logic
+│         ├── domain/
+│         │   ├── entities/ (Booking, Camera, User)
+│         │   ├── value-objects/ (Money, Period, Address)
+│         │   ├── aggregates/ (RentalAggregate)
+│         │   └── domain-events/ (BookingCreated, CameraReserved)
+│         ├── application/
+│         │   └── use-cases/ (CreateBooking, ConfirmBooking)
+│         └── infrastructure/
+│             └── repositories/ (implementations for the database)
+├── scripts/
+│   ├── setup.sh
+├── services/
+│   ├── api-gateway/ (Node.js + Fastify)
+│   ├── auth-service/ (NextAuth.js + JWT)
+│   ├── booking-service/ (microservice for booking)
+│   ├── notification-service/ (notification)
+│   └── sync-service/ (CRDT + WebSocket)
+├── .env.locale
+├── .gitignore
+├── .prettierignore
+├── .prettierrc
+├── commitlint.config.js
+├── eslint.config.js (v ^9.37.0)
+├── package.json 
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── README.md
+├── tailwind.config.js
+├── tsconfig.json
+└── turbo.json

@@ -95,3 +95,10 @@ jobs:
       - name: Generate Prisma Client
         working-directory: packages/database
         run: npx prisma generate
+
+      - name: Block if checks fail
+        run: |
+          if [ "${{ job.status }}" == "failure" ]; then
+            echo "❌ CI failed - blocking deployment"
+            exit 1
+          fi

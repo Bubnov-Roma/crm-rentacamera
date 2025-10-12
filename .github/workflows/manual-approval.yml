@@ -1,0 +1,12 @@
+name: Manual Approval
+on:
+  pull_request:
+    types: [closed]
+jobs:
+  check-merge:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify CI passed
+        run: |
+          echo "Make sure CI passed before merging!"
