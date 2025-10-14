@@ -1,0 +1,162 @@
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  phone        String    @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  avatar       String?
+  
+  // roles & profiles
+  role         UserRole  @default(CLIENT)
+  client       Client?
+  employee     Employee?
+  partner      Partner?
+  
+  // discount (5, 10, 15, 20%)
+  discountRate Float?    @default(0)
+  
+  // audit
+  isActive     Boolean   @default(true)
+  isVerified   Boolean   @default(false)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  // relation 
+  sessions     Session[]
+  bookings     Booking[]
+  systemLogs   SystemLog[]
+  bookingChanges BookingChange[]
+  reviews      Review[]
+  tasks        Task[]
+
+  @@map("users")
+}
+
+model Client {
+  id                    String       @id @default(cuid())
+  userId                String       @unique
+  user                  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Client profile details
+  clientType            ClientType   @default(INDIVIDUAL)
+  documentType          String?
+  documentNumber        String?
+  dateOfBirth           DateTime?
+  companyName           String?
+  taxId                 String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  
+  // Statistics and loyalty
+  totalBookings         Int          @default(0)
+  totalSpent            Float        @default(0)
+  loyaltyLevel          LoyaltyLevel @default(STANDARD)
+  creditLimit           Float        @default(0)
+  
+  // For legal entities
+  legalEntityInfo       Json?        // Registration details
+  authorizedPerson      String?      // Name of authorized person
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("clients")
+}
+
+model Employee {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  position    String   // manager, technician, consultant
+  hireDate    DateTime
+  isActive    Boolean  @default(true)
+  permissions Json?    // JSON with specific permissions
+  
+  // relations
+  services    BookingService[]
+  assignedTasks Task[]
+  maintenanceRecords MaintenanceRecord[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("employees")
+}
+
+model Partner {
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  partnerType    PartnerType    @default(INDIVIDUAL)
+  companyName    String?
+  taxId          String?
+  bankAccount    String?
+  commissionRate Float?         // % from the rent that the partner receives
+  paymentMethod  PaymentMethod?
+  contractNumber String?
+  isActive       Boolean        @default(true)
+  
+  // additional details
+  contractTerms  Json?          // contract terms
+  paymentDetails Json?          // payment details
+
+  // partner's equipment
+  Equipment      Equipment[]
+  
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("partners")
+  Payment Payment[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token     String   @unique
+  expiresAt DateTime
+  userAgent String?
+  ipAddress String?
+  
+  createdAt DateTime @default(now())
+
+  @@map("sessions")
+}
+
+enum PaymentMethod {
+  FIXED
+  PERCENTAGE
+}
+
+enum PartnerType {
+  INDIVIDUAL
+  LEGAL
+}
+
+
+enum LoyaltyLevel {
+  STANDARD
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  CLIENT
+  PARTNER
+}
+
+enum ClientType {
+  INDIVIDUAL
+  LEGAL
+  PARTNER
+}

@@ -1,0 +1,39 @@
+model Payment {
+  id          String      @id @default(cuid())
+  bookingId   String
+  booking     Booking     @relation(fields: [bookingId], references: [id])
+  
+  amount      Float
+  paymentType PaymentType
+  status      PaymentStatus @default(PENDING)
+  
+  // payment details
+  transactionId String?
+  paymentMethod String? // "card", "cash", "transfer"
+  paidAt       DateTime?
+  
+  // for partner payouts
+  partnerId    String?
+  partner      Partner?  @relation(fields: [partnerId], references: [id])
+  partnerAmount Float?   // partner's sum 
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("payments")
+}
+
+enum PaymentType {
+  DEPOSIT
+  RENTAL
+  PENALTY
+  SERVICE
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
