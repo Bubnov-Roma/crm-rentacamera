@@ -1,13 +1,5 @@
 # 🗂️ Context for CRM RENTACAMERA
 
-## 📅 Date update: $(current_date)
-
-## 🎯 ТЕКУåЩИЙ ЭТАП
-**Фаза 0.1: Проектирование архитектуры**
-- ✅ Определены требования и роли пользователей
-- ✅ Спроектирована детальная ERD диаграмма
-- 🚀 В процессе: Создание Draw.io диаграммы
-
 ### 🏗️ Architecture patterns
 
 - DI (use Awilix for Dependency Injection)

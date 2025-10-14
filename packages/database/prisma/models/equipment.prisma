@@ -1,0 +1,182 @@
+model EquipmentCategory {
+  id           String              @id @default(cuid())
+  name         String              @unique
+  slug         String              @unique
+  description  String?
+  image        String?
+  
+  // hierarchy categories
+  parentId     String?
+  parent       EquipmentCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children     EquipmentCategory[] @relation("CategoryHierarchy")
+  
+  // prices (base rates)
+  hourlyRate   Float
+  dailyRate    Float
+  monthlyRate  Float
+  
+  // advanced pricing
+  pricingRules Json?   // JSON pricing rules
+  customFields Json?   // JSON custom fields for specific categories
+  sortOrder    Int     @default(0)
+  isActive     Boolean @default(true)
+  viewType     ViewType @default(LIST)
+  
+  // history and audit
+  history      Json?   // who created/updated and when
+  
+  // equipment and relations
+  equipment    Equipment[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("equipment_categories")
+}
+
+enum ViewType {
+  TREE
+  LIST
+  GRID
+}
+
+
+model Equipment {
+  id              String              @id @default(cuid())
+  sku             String              @unique
+  name            String
+  description     String?
+  
+  // category
+  categoryId      String
+  category        EquipmentCategory   @relation(fields: [categoryId], references: [id])
+  
+  // brand, model, serial number
+  brand           String
+  model           String
+  serialNumber    String              @unique
+  
+  // specifications
+  specifications  Json   // JSON specifications
+  
+  // prices (base rates)
+  baseHourlyRate  Float
+  baseDailyRate   Float
+  baseMonthlyRate Float
+  depositAmount   Float
+  replacementCost Float
+  
+  // matrix pricing for different durations and conditions
+  pricingMatrix   Json   // JSON matrix pricing
+  
+  // metadata
+  tags            String[] // tags for searching and filtering
+  comments        String?
+  images          String[] // array of image URLs
+  manuals         String[] // array of manual URLs
+  
+  // status and condition
+  status          EquipmentStatus     @default(ACTIVE)
+  isPublic        Boolean             @default(true)
+  
+  // owner partner/vendor
+  partnerId       String?
+  partner         Partner?            @relation(fields: [partnerId], references: [id])
+  
+  // relations
+  instances       EquipmentInstance[]
+  inventories     Inventory[]
+  tasks        Task[]
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@map("equipment")
+}
+
+enum EquipmentStatus {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+}
+
+model EquipmentInstance {
+  id                   String                  @id @default(cuid())
+  serialNumber         String                  @unique
+  internalId           String // CAM-001-EKB-P1-O
+  
+  // related equipment
+  equipmentId          String
+  equipment            Equipment               @relation(fields: [equipmentId], references: [id])
+  
+  // current location
+  currentLocationId    String
+  currentLocation      RentalPoint             @relation(fields: [currentLocationId], references: [id])
+  
+  // status and condition
+  status               EquipmentInstanceStatus @default(AVAILABLE)
+  condition            EquipmentCondition      @default(EXCELLENT)
+  
+  // inventory details
+  inventoryNumber      String? // internal number
+  barcode              String? // barcode or QR code
+  
+  // maintenance history 
+  purchaseDate         DateTime?
+  purchasePrice        Float?
+  lastMaintenanceDate  DateTime?
+  nextMaintenanceDate  DateTime?
+  
+  // details
+  configurationDetails Json?   // JSON configuration details
+  defectsDescription   String? // description of any defects
+  notes                String?
+  
+  // if rented out to sub-rental location
+  isSubRental          Boolean @default(false)
+  subRentalLocation    String? // name or ID of sub-rental location
+  
+  // relations
+  transfers           EquipmentTransfer[]
+  bookingItems        BookingItem[]
+  maintenanceRecords  MaintenanceRecord[]
+  
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+
+  @@map("equipment_instances")
+}
+
+enum EquipmentInstanceStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+  RESERVED
+  DAMAGED
+  LOST
+}
+
+enum EquipmentCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  DAMAGED
+}
+
+model Inventory {
+  id                String      @id @default(cuid())
+  equipmentId       String
+  equipment         Equipment   @relation(fields: [equipmentId], references: [id])
+  rentalPointId     String
+  rentalPoint       RentalPoint @relation(fields: [rentalPointId], references: [id])
+  
+  isAvailable       Boolean     @default(true)
+  defaultQuantity   Int         @default(1)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([equipmentId, rentalPointId])
+  @@map("inventory")
+}

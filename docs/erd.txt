@@ -12,11 +12,13 @@ crm-rentacamera/
 │       ├── manual-approval.yml
 │       ├── security.yml
 │       └── weekly-progress.yml
+│
 ├── .husky/ 
 │   ├── _
 │   ├── commit-msg
 │   ├── pre-commit
 │   └── pre-push
+│
 ├── apps/
 │   ├── web/ (Next.js 15.5.4) - client site
 │   │   ├── .eslintrc.json
@@ -29,12 +31,15 @@ crm-rentacamera/
 │   │       └── app/
 │   │            ├── layout.tsx
 │   │            └── page.tsx
+│   │ 
 │   ├── admin/ (Next.js 15.5.4) - admin panel
 │   └── mobile/ (PWA) - mobile app
+│
 ├── docs/
 │   ├── erd.txt (this file)
 │   ├── every_day_process.md
 │   └── context_backup.md
+│
 ├── packages/
 │   ├── ui/ - shared components (Ant Design + custom)
 │   │   ├── src/
@@ -44,15 +49,33 @@ crm-rentacamera/
 │   │   ├── package.json
 │   │   ├── tsconfig.json
 │   │   └── vite.config.json
+│   │
 │   ├── utils/ - utils
+│   │
 │   ├── database/ - Prisma + schema
 │   │   ├── prisma
-│   │   │    └── schema.prisma
+│   │   │    └── ├── schema.prisma              # main file
+│   │   │        ├── models/
+│   │   │        │   ├── user.prisma           # users & roles
+│   │   │        │   ├── equipment.prisma      # equipment & category
+│   │   │        │   ├── booking.prisma        # booking & logistic
+│   │   │        │   ├── payment.prisma        # payment & finance
+│   │   │        │   └── system.prisma         # system tables
+│   │   │        └── enums/
+│   │   │            ├── user.enum.prisma
+│   │   │            ├── equipment.enum.prisma
+│   │   │            ├── booking.enum.prisma
+│   │   │            └── system.enum.prisma
+│   │   │        
 │   │   ├── src/
-│   │   │    └── index.ts
+│   │   │   ├── index.ts
+│   │   │   └── prisma-client.ts
+│   │   │ 
 │   │   ├── .env
 │   │   └── package.json
+│   │
 │   ├── contracts/ - smart-contracts
+│   │
 │   └── core/ - domain logic
 │         ├── domain/
 │         │   ├── entities/ (Booking, Camera, User)
@@ -64,13 +87,15 @@ crm-rentacamera/
 │         └── infrastructure/
 │             └── repositories/ (implementations for the database)
 ├── scripts/
-│   ├── setup.sh
+│   └──  setup.sh
+│
 ├── services/
 │   ├── api-gateway/ (Node.js + Fastify)
 │   ├── auth-service/ (NextAuth.js + JWT)
 │   ├── booking-service/ (microservice for booking)
 │   ├── notification-service/ (notification)
 │   └── sync-service/ (CRDT + WebSocket)
+│
 ├── .env.locale
 ├── .gitignore
 ├── .prettierignore

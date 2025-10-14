@@ -1,0 +1,212 @@
+model RentalPoint {
+  id          String         @id @default(cuid())
+  name        String         // full office city name
+  code        String         @unique // "EKB", "UFA", // "SMR", "TMN"
+  address     String
+  isActive    Boolean        @default(true)
+  
+  // logistics
+  outgoingTransfers EquipmentTransfer[] @relation("OutgoingTransfers")
+  incomingTransfers EquipmentTransfer[] @relation("IncomingTransfers")
+  
+  // delivery routes
+  deliveryRoutes DeliveryRoute[] @relation("SourceRoutes")
+  destinationRoutes DeliveryRoute[] @relation("DestinationRoutes")
+  
+  // equipment & inventory
+  equipmentInstances EquipmentInstance[]
+  inventories        Inventory[]
+  
+  // bookings
+  pickupBookings    Booking[] @relation("PickupBookings")
+
+  sourceLocation BookingItem[] @relation("BookingItemSourceLocation")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("rental_points")
+}
+
+model DeliveryRoute {
+  id              String     @id @default(cuid())
+  sourceId        String
+  source          RentalPoint @relation("SourceRoutes", fields: [sourceId], references: [id])
+  destinationId   String
+  destination     RentalPoint @relation("DestinationRoutes", fields: [destinationId], references: [id])
+  deliveryDays    Int        // How many days will it take for delivery
+  isActive        Boolean    @default(true)
+  cost            Float?     // delivery cost if applicable
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceId, destinationId])
+  @@map("delivery_routes")
+}
+
+model Booking {
+  id          String         @id @default(cuid())
+  number      String         @unique // "BK-2024-001"
+  
+  // client
+  userId      String
+  user        User           @relation(fields: [userId], references: [id])
+  
+  // filial for equipment pickup
+  pickupLocationId String
+  pickupLocation RentalPoint @relation("PickupBookings", fields: [pickupLocationId], references: [id])
+  
+  // date
+  startDate   DateTime
+  endDate     DateTime
+  totalHours  Int
+  
+  // status and pricing
+  status      BookingStatus  @default(PENDING)
+  totalAmount Float
+  depositAmount Float
+  penaltyAmount Float        @default(0)
+  
+  // pricing details
+  pricingType PricingType
+  discountRate Float         @default(0) // (5, 10, 15, 20%)
+  calculatedPrice Json       // detailed price breakdown in JSON
+  
+  // relations
+  items       BookingItem[]
+  payments    Payment[]
+  services    BookingService[]
+  
+  // history of changes
+  changes     BookingChange[]
+  reviews     Review[]
+  
+  // copies of booking (for recurring bookings)
+  parentBookingId String?
+  parentBooking   Booking?    @relation("BookingCopies", fields: [parentBookingId], references: [id])
+  copiedBookings Booking[]    @relation("BookingCopies")
+  
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  DRAFT
+  PENDING
+  CONFIRMED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum PricingType {
+  HOURLY
+  DAILY
+  WEEKEND
+  MIXED
+  CUSTOM
+}
+
+model BookingItem {
+  id          String   @id @default(cuid())
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+  
+  equipmentInstanceId String
+  equipmentInstance EquipmentInstance @relation(fields: [equipmentInstanceId], references: [id])
+  
+  quantity    Int      @default(1)
+  unitPrice   Float    // Price per unit
+  discount    Float    @default(0) // discount on this item
+  totalPrice  Float    // quantity * unitPrice - discount
+  
+  // logistics
+  sourceLocationId String?
+  sourceLocation   RentalPoint? @relation("BookingItemSourceLocation", fields: [sourceLocationId], references: [id])
+  requiresTransfer Boolean     @default(false)
+
+
+  // transferId       String? @unique
+  transfer         EquipmentTransfer?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("booking_items")
+}
+
+model BookingService {
+  id          String      @id @default(cuid())
+  bookingId   String
+  booking     Booking     @relation(fields: [bookingId], references: [id])
+  
+  serviceType ServiceType
+  name        String
+  price       Float
+  
+  employeeId  String?
+  employee    Employee?   @relation(fields: [employeeId], references: [id])
+  
+  status      ServiceStatus @default(PENDING)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("booking_services")
+}
+
+enum ServiceType {
+  DELIVERY
+  PICKUP
+  SETUP
+  SUPPORT
+  GAFFER
+  LIGHTING_TECH
+  CONSULTATION
+}
+
+enum ServiceStatus {
+  PENDING
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+
+model EquipmentTransfer {
+  id          String     @id @default(cuid())
+  
+  equipmentInstanceId String
+  equipmentInstance EquipmentInstance @relation(fields: [equipmentInstanceId], references: [id])
+  
+  fromLocationId String
+  fromLocation   RentalPoint @relation("OutgoingTransfers", fields: [fromLocationId], references: [id])
+  toLocationId   String
+  toLocation     RentalPoint @relation("IncomingTransfers", fields: [toLocationId], references: [id])
+  
+  bookingItemId String? @unique 
+  bookingItem   BookingItem? @relation(fields: [bookingItemId], references: [id])
+  
+  status       TransferStatus @default(PENDING)
+  scheduledDate DateTime
+  estimatedArrival DateTime
+  actualArrival DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("equipment_transfers")
+}
+
+
+enum TransferStatus {
+  PENDING
+  SCHEDULED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
