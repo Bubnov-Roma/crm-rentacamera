@@ -10,3 +10,4 @@ jobs:
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           addAssignees: author
+          configuration-path: '.github/auto_assign.yml'
