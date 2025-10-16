@@ -16,7 +16,6 @@ export default [
       '**/public/**',
     ],
   },
-
   // general JS/TS rules
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
