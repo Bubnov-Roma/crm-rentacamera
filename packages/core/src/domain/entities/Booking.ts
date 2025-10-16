@@ -68,7 +68,6 @@ export class Booking {
   static create(params: Omit<BookingData, 'id' | 'number' | 'status'>): Booking {
     const id = `booking_${Date.now()}`;
     const number = `BK-${Date.now()}`;
-
     return new Booking({
       ...params,
       id,
@@ -76,7 +75,10 @@ export class Booking {
       status: 'PENDING',
     });
   }
-
+  // Restore from db
+  static reconstitute(data: BookingData): Booking {
+    return new Booking(data);
+  }
   // Business-methods with validation
   confirm(): void {
     // Domain logic for confirm booking
@@ -86,13 +88,11 @@ export class Booking {
     this._status = 'CONFIRMED';
     this.addDomainEvent('BOOKING_CONFIRMED', { bookingId: this.data.id });
   }
-
   cancel(reason: string): void {
     // Domain logic for cancel booking
     if (this._status === 'CANCELLED' || this._status === 'COMPLETED') {
       throw new Error(`Cannot cancel booking in ${this._status} status`);
     }
-
     this._status = 'CANCELLED';
     this.addDomainEvent('BOOKING_CANCELLED', {
       bookingId: this.data.id,
@@ -100,7 +100,6 @@ export class Booking {
       previousStatus: this.penaltyAmount.amount,
     });
   }
-
   // For working with equipment
   calculatePenalty(cancellationDate: Date): Money {
     const hoursUntilStart = this.data.period.startDate.getTime() - cancellationDate.getTime();
@@ -110,7 +109,6 @@ export class Booking {
     if (hours > 24) return new Money(this.depositAmount.amount * 0.5); // 1-2 days - 50%
     return new Money(this.depositAmount.amount); // less 1 day - 100%
   }
-
   applyPenalty(penalty: Money): void {
     this.data.penaltyAmount = penalty;
     this.addDomainEvent('PENALTY_APPLIED', {
@@ -118,8 +116,7 @@ export class Booking {
       penaltyAmount: penalty.amount,
     });
   }
-
-  // Getters (incapsulation)
+  // Getters (encapsulation)
   get id(): string {
     return this.data.id;
   }
@@ -153,7 +150,6 @@ export class Booking {
   get endDate(): Date {
     return this.data.period.endDate;
   }
-
   // Validation
   isValidForConfirmation(): boolean {
     return (
@@ -162,34 +158,22 @@ export class Booking {
       this.totalAmount.amount > 0
     );
   }
-
   canBeModified(): boolean {
     return this._status === 'DRAFT' || this._status === 'PENDING';
   }
-
   getDurationInHours(): number {
     return Math.ceil((this.endDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60));
   }
-
   // Domain Events
-
-  // Static method for restore from db
-  static reconstitute(data: BookingData): Booking {
-    return new Booking(data);
-  }
-
   private addDomainEvent(type: string, payload: Record<string, unknown>): void {
     this.domainEvents.push({ type, payload, timestamp: new Date() });
   }
-
   getDomainEvents(): ReadonlyArray<DomainEvent> {
     return [...this.domainEvents];
   }
-
   clearDomainEvents(): void {
     this.domainEvents = [];
   }
-
   // Addition business-logic
   activate(): void {
     if (this.status !== 'CONFIRMED') {
@@ -202,7 +186,6 @@ export class Booking {
     this._status = 'ACTIVE';
     this.addDomainEvent('BOOKING_ACTIVATED', { bookingId: this.data.id });
   }
-
   complete(): void {
     if (this.status !== 'ACTIVE') {
       throw new Error('Only active bookings can be completed');
@@ -211,16 +194,13 @@ export class Booking {
     this._status = 'COMPLETED';
     this.addDomainEvent('BOOKING_COMPLETED', { bookingId: this.data.id });
   }
-
   // State check methods
   isActive(): boolean {
     return this._status === 'ACTIVE';
   }
-
   isCompleted(): boolean {
     return this._status === 'COMPLETED';
   }
-
   isCancelled(): boolean {
     return this._status === 'CANCELLED';
   }

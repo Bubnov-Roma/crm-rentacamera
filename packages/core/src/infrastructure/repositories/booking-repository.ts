@@ -1,11 +1,27 @@
-import { Prisma, PrismaClient, BookingStatus as PrismaBookingStatus } from '@prisma/client';
-import {
-  Booking,
-  Money,
-  RentalPeriod,
-  BookingStatus as DomainBookingStatus,
-} from '../../domain/entities/Booking';
+import { PrismaClient } from '@prisma/client';
+import { Booking, Money, RentalPeriod } from '../../domain/entities/Booking';
 import { IBookingRepository } from '../interfaces/IBookingRepository';
+import { StatusMapper } from '../types/booking-types';
+
+type PrismaBookingData = {
+  id: string;
+  number: string;
+  userId: string;
+  pickupLocationId: string;
+  startDate: Date;
+  endDate: Date;
+  status: string;
+  totalAmount: number;
+  depositAmount: number;
+  penaltyAmount: number | null;
+  totalHours: number | null;
+  pricingType: string | null;
+  discountRate: number | null;
+  calculatedPrice: unknown | null;
+  parentBookingId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export class PrismaBookingRepository implements IBookingRepository {
   constructor(private prisma: PrismaClient) {}
@@ -23,15 +39,47 @@ export class PrismaBookingRepository implements IBookingRepository {
   }
 
   async save(booking: Booking): Promise<void> {
-    const existing = await this.prisma.booking.findUnique({
-      where: { id: booking.id },
-    });
+    const createData = {
+      id: booking.id,
+      number: booking.number,
+      userId: booking.userId,
+      pickupLocationId: booking.pickupLocationId,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
+      status: StatusMapper.toPrisma(booking.status),
+      totalAmount: booking.totalAmount.amount,
+      depositAmount: booking.depositAmount.amount,
+      penaltyAmount: booking.penaltyAmount.amount,
+      totalHours: booking.period.getDurationInHours(),
+      pricingType: 'DAILY' as const,
+      discountRate: 0,
+      calculatedPrice: {},
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
 
-    if (existing) {
-      await this.updateBooking(booking);
-    } else {
-      await this.createBooking(booking);
-    }
+    const updateData = {
+      number: booking.number,
+      userId: booking.userId,
+      pickupLocationId: booking.pickupLocationId,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
+      status: StatusMapper.toPrisma(booking.status),
+      totalAmount: booking.totalAmount.amount,
+      depositAmount: booking.depositAmount.amount,
+      penaltyAmount: booking.penaltyAmount.amount,
+      totalHours: booking.period.getDurationInHours(),
+      pricingType: 'DAILY' as const,
+      discountRate: 0,
+      calculatedPrice: {},
+      updatedAt: new Date(),
+    };
+
+    await this.prisma.booking.upsert({
+      where: { id: booking.id },
+      create: createData,
+      update: updateData,
+    });
   }
 
   async findByUserId(userId: string): Promise<Booking[]> {
@@ -52,53 +100,7 @@ export class PrismaBookingRepository implements IBookingRepository {
     });
   }
 
-  private async createBooking(booking: Booking): Promise<void> {
-    const createData: Prisma.BookingCreateInput = {
-      id: booking.id,
-      number: booking.number,
-      user: { connect: { id: booking.userId } },
-      pickupLocation: { connect: { id: booking.pickupLocationId } },
-      startDate: booking.startDate,
-      endDate: booking.endDate,
-      status: this.mapToPrismaStatus(booking.status),
-      totalAmount: booking.totalAmount.amount,
-      depositAmount: booking.depositAmount.amount,
-      penaltyAmount: booking.penaltyAmount.amount,
-      totalHours: booking.period.getDurationInHours(),
-      pricingType: 'DAILY',
-      discountRate: 0,
-      calculatedPrice: {},
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    await this.prisma.booking.create({ data: createData });
-  }
-
-  private async updateBooking(booking: Booking): Promise<void> {
-    const updateData: Prisma.BookingUpdateInput = {
-      number: booking.number,
-      user: { connect: { id: booking.userId } },
-      pickupLocation: { connect: { id: booking.pickupLocationId } },
-      startDate: booking.startDate,
-      endDate: booking.endDate,
-      status: this.mapToPrismaStatus(booking.status),
-      totalAmount: booking.totalAmount.amount,
-      depositAmount: booking.depositAmount.amount,
-      penaltyAmount: booking.penaltyAmount.amount,
-      totalHours: booking.period.getDurationInHours(),
-      pricingType: 'DAILY',
-      discountRate: 0,
-      calculatedPrice: {},
-      updatedAt: new Date(),
-    };
-
-    await this.prisma.booking.update({
-      where: { id: booking.id },
-      data: updateData,
-    });
-  }
-
-  private toDomainEntity(prismaData: import('@prisma/client').Booking): Booking {
+  private toDomainEntity(prismaData: PrismaBookingData): Booking {
     const period = new RentalPeriod(prismaData.startDate, prismaData.endDate);
     const totalAmount = new Money(prismaData.totalAmount);
     const depositAmount = new Money(prismaData.depositAmount);
@@ -113,34 +115,8 @@ export class PrismaBookingRepository implements IBookingRepository {
       period,
       totalAmount,
       depositAmount,
-      status: this.mapToDomainStatus(prismaData.status),
+      status: StatusMapper.toDomain(prismaData.status),
       penaltyAmount,
     });
-  }
-
-  private mapToPrismaStatus(domainStatus: DomainBookingStatus): PrismaBookingStatus {
-    const statusMap: Record<DomainBookingStatus, PrismaBookingStatus> = {
-      DRAFT: 'DRAFT',
-      PENDING: 'PENDING',
-      CONFIRMED: 'CONFIRMED',
-      ACTIVE: 'ACTIVE',
-      COMPLETED: 'COMPLETED',
-      CANCELLED: 'CANCELLED',
-    };
-
-    return statusMap[domainStatus];
-  }
-
-  private mapToDomainStatus(prismaStatus: PrismaBookingStatus): DomainBookingStatus {
-    const statusMap: Record<PrismaBookingStatus, DomainBookingStatus> = {
-      DRAFT: 'DRAFT',
-      PENDING: 'PENDING',
-      CONFIRMED: 'CONFIRMED',
-      ACTIVE: 'ACTIVE',
-      COMPLETED: 'COMPLETED',
-      CANCELLED: 'CANCELLED',
-    };
-
-    return statusMap[prismaStatus];
   }
 }
