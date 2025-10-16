@@ -1,5 +1,5 @@
 import { IEquipmentRepository, IUserRepository } from 'src/infrastructure/interfaces';
-import { Booking } from '../../domain/entities/Booking';
+import { Booking, Money, RentalPeriod } from '../../domain/entities/Booking';
 import { IBookingRepository } from '../../infrastructure/interfaces/IBookingRepository';
 import { PricingService } from 'src/domain/services/pricing-service';
 
@@ -42,24 +42,25 @@ export class CreateBookingUseCase {
         throw new Error(`Equipment ${item.equipmentInstanceId} is not available`);
       }
     }
-    // Booking number generation
-    const bookingNumber = `BK-${Date.now()}`;
-    // Cost calculation
-    const totalAmount = await this.pricingService.calculateTotal(
-      command.equipmentItems,
-      command.startDate,
-      command.endDate,
-      user.discountRate || 0,
-    );
 
-    const depositAmount = totalAmount * 0.3; // 30% deposit
+    // Create RentalPeriod value object
+    const period = new RentalPeriod(command.startDate, command.endDate);
+    // Cost calculating
+    const totalAmount = await this.pricingService.calculateTotal({
+      equipmentItems: command.equipmentItems,
+      period,
+      discountRate: user.discountRate || 0,
+    });
+
+    const depositAmount = new Money(totalAmount.amount * 0.3); // 30% deposit
+
+    // Booking number generation
+    // const _bookingNumber = `BK-${Date.now()}`;
     // Creating booking
     const booking = Booking.create({
-      number: bookingNumber,
       userId: command.userId,
       pickupLocationId: command.pickupLocationId,
-      startDate: command.startDate,
-      endDate: command.endDate,
+      period,
       totalAmount,
       depositAmount,
     });
