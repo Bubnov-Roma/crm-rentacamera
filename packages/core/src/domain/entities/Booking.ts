@@ -12,136 +12,174 @@ export interface DomainEvent {
   timestamp: Date;
 }
 
-export class Booking {
-  private domainEvents: DomainEvent[] = [];
+// Value Objects for business logic
+export class Money {
+  constructor(
+    public readonly amount: number,
+    public readonly currency: string = 'RUB',
+  ) {
+    if (amount < 0) throw new Error('Amount cannot be negative');
+  }
+}
 
-  private constructor(
-    public readonly id: string,
-    public readonly number: string,
-    public readonly userId: string,
-    public readonly pickupLocationId: string,
+export class RentalPeriod {
+  constructor(
     public readonly startDate: Date,
     public readonly endDate: Date,
-    public status: BookingStatus,
-    public readonly totalAmount: number,
-    public readonly depositAmount: number,
-    public readonly createdAt?: Date,
-    public readonly updatedAt?: Date,
-  ) {}
-
-  static fromPrisma(data: {
-    id: string;
-    number: string;
-    userId: string;
-    pickupLocationId: string;
-    startDate: Date;
-    endDate: Date;
-    status: BookingStatus;
-    totalAmount: number;
-    depositAmount: number;
-    createdAt: Date;
-    updatedAt: Date;
-  }): Booking {
-    return new Booking(
-      data.id,
-      data.number,
-      data.userId,
-      data.pickupLocationId,
-      data.startDate,
-      data.endDate,
-      data.status,
-      data.totalAmount,
-      data.depositAmount,
-      data.createdAt,
-      data.updatedAt,
-    );
+  ) {
+    if (startDate >= endDate) {
+      throw new Error('Start date must be before end date');
+    }
   }
 
-  toPrisma(): Record<string, unknown> {
-    return {
-      id: this.id,
-      number: this.number,
-      userId: this.userId,
-      pickupLocationId: this.pickupLocationId,
-      startDate: this.startDate,
-      endDate: this.endDate,
-      status: this.status,
-      totalAmount: this.totalAmount,
-      depositAmount: this.depositAmount,
-      ...(this.createdAt && { createdAt: this.createdAt }),
-      ...(this.updatedAt && { updatedAt: this.updatedAt }),
-    };
+  getDurationInHours(): number {
+    return Math.ceil((this.endDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60));
+  }
+}
+
+export interface BookingData {
+  id: string;
+  number: string;
+  userId: string;
+  pickupLocationId: string;
+  period: RentalPeriod;
+  totalAmount: Money;
+  depositAmount: Money;
+  status: BookingStatus;
+  penaltyAmount?: Money;
+}
+
+export class Booking {
+  private domainEvents: DomainEvent[] = [];
+  private _status: BookingStatus;
+
+  constructor(private data: BookingData) {
+    this._status = data.status;
+
+    if (data.totalAmount.amount < 0) {
+      throw new Error('Total amount cannot be negative');
+    }
+    if (data.depositAmount.amount < 0) {
+      throw new Error('Deposit amount cannot be negative');
+    }
   }
 
-  static create(properties: {
-    id?: string;
-    number: string;
-    userId: string;
-    pickupLocationId: string;
-    startDate: Date;
-    endDate: Date;
-    totalAmount: number;
-    depositAmount: number;
-  }): Booking {
-    const id = properties.id || `booking_${Date.now()}`;
+  // Fabric method for creating New booking
+  static create(params: Omit<BookingData, 'id' | 'number' | 'status'>): Booking {
+    const id = `booking_${Date.now()}`;
+    const number = `BK-${Date.now()}`;
 
-    return new Booking(
+    return new Booking({
+      ...params,
       id,
-      properties.number,
-      properties.userId,
-      properties.pickupLocationId,
-      properties.startDate,
-      properties.endDate,
-      'PENDING',
-      properties.totalAmount,
-      properties.depositAmount,
-    );
+      number,
+      status: 'PENDING',
+    });
   }
 
   // Business-methods with validation
-
   confirm(): void {
     // Domain logic for confirm booking
-    if (this.status !== 'PENDING') {
+    if (this._status !== 'PENDING') {
       throw new Error('Only pending bookings can be confirmed');
     }
-
-    this.status = 'CONFIRMED';
-    this.addDomainEvent({
-      type: 'BOOKING_CONFIRMED',
-      payload: { bookingId: this.id },
-    });
+    this._status = 'CONFIRMED';
+    this.addDomainEvent('BOOKING_CONFIRMED', { bookingId: this.data.id });
   }
 
   cancel(reason: string): void {
     // Domain logic for cancel booking
-    if (this.status === 'CANCELLED' || this.status === 'COMPLETED') {
-      throw new Error(`Cannot cancel booking in ${this.status} status`);
+    if (this._status === 'CANCELLED' || this._status === 'COMPLETED') {
+      throw new Error(`Cannot cancel booking in ${this._status} status`);
     }
 
-    this.status = 'CANCELLED';
-    this.addDomainEvent({
-      type: 'BOOKING_CANCELLED',
-      payload: {
-        bookingId: this.id,
-        reason,
-        previousStatus: this.status,
-      },
+    this._status = 'CANCELLED';
+    this.addDomainEvent('BOOKING_CANCELLED', {
+      bookingId: this.data.id,
+      reason,
+      previousStatus: this.penaltyAmount.amount,
     });
   }
 
   // For working with equipment
-  calculatePenalty(cancellationDate: Date): number {
-    const hoursUntilStart =
-      (this.startDate.getTime() - cancellationDate.getTime()) / (1000 * 60 * 60);
+  calculatePenalty(cancellationDate: Date): Money {
+    const hoursUntilStart = this.data.period.startDate.getTime() - cancellationDate.getTime();
+    const hours = hoursUntilStart / (1000 * 60 * 60);
 
-    if (hoursUntilStart > 48) return 0; // more 2 days - without penalty
-    if (hoursUntilStart > 24) return this.depositAmount * 0.5; // 1-2 days - 50%
-    return this.depositAmount; // less 1 day - 100%
+    if (hours > 48) return new Money(0); // more 2 days - without penalty
+    if (hours > 24) return new Money(this.depositAmount.amount * 0.5); // 1-2 days - 50%
+    return new Money(this.depositAmount.amount); // less 1 day - 100%
   }
 
-  private addDomainEvent(event: Omit<DomainEvent, 'timestamp'>): void {
-    this.domainEvents.push({ ...event, timestamp: new Date() });
+  applyPenalty(penalty: Money): void {
+    this.data.penaltyAmount = penalty;
+    this.addDomainEvent('PENALTY_APPLIED', {
+      bookingId: this.data.id,
+      penaltyAmount: penalty.amount,
+    });
+  }
+
+  // Getters (incapsulation)
+  get id(): string {
+    return this.data.id;
+  }
+  get number(): string {
+    return this.data.number;
+  }
+  get userId(): string {
+    return this.data.userId;
+  }
+  get pickupLocationId(): string {
+    return this.data.pickupLocationId;
+  }
+  get period(): RentalPeriod {
+    return this.data.period;
+  }
+  get totalAmount(): Money {
+    return this.data.totalAmount;
+  }
+  get depositAmount(): Money {
+    return this.data.depositAmount;
+  }
+  get penaltyAmount(): Money {
+    return this.data.penaltyAmount || new Money(0);
+  }
+  get status(): BookingStatus {
+    return this._status;
+  }
+  get startDate(): Date {
+    return this.data.period.startDate;
+  }
+  get endDate(): Date {
+    return this.data.period.endDate;
+  }
+
+  // Validation
+  isValidForConfirmation(): boolean {
+    return (
+      this._status === 'PENDING' &&
+      this.data.period.startDate > new Date() &&
+      this.totalAmount.amount > 0
+    );
+  }
+
+  canBeModified(): boolean {
+    return this._status === 'DRAFT' || this._status === 'PENDING';
+  }
+
+  getDurationInHours(): number {
+    return Math.ceil((this.endDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60));
+  }
+
+  // Domain Events
+
+  // Static method for restore from db
+  static reconstitute(data: BookingData): Booking {
+    return new Booking(data);
+  }
+
+  private addDomainEvent(type: string, payload: Record<string, unknown>): void {
+    this.domainEvents.push({ type, payload, timestamp: new Date() });
   }
 
   getDomainEvents(): ReadonlyArray<DomainEvent> {
@@ -150,15 +188,6 @@ export class Booking {
 
   clearDomainEvents(): void {
     this.domainEvents = [];
-  }
-
-  // Validation
-  isValidForConfirmation(): boolean {
-    return this.status === 'PENDING' && this.startDate > new Date() && this.totalAmount > 0;
-  }
-
-  getDurationInHours(): number {
-    return Math.ceil((this.endDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60));
   }
 
   // Addition business-logic
@@ -170,11 +199,8 @@ export class Booking {
       throw new Error('Cannot activate booking before start date');
     }
 
-    this.status = 'ACTIVE';
-    this.addDomainEvent({
-      type: 'BOOKING_ACTIVATED',
-      payload: { bookingId: this.id },
-    });
+    this._status = 'ACTIVE';
+    this.addDomainEvent('BOOKING_ACTIVATED', { bookingId: this.data.id });
   }
 
   complete(): void {
@@ -182,27 +208,20 @@ export class Booking {
       throw new Error('Only active bookings can be completed');
     }
 
-    this.status = 'COMPLETED';
-    this.addDomainEvent({
-      type: 'BOOKING_COMPLETED',
-      payload: { bookingId: this.id },
-    });
+    this._status = 'COMPLETED';
+    this.addDomainEvent('BOOKING_COMPLETED', { bookingId: this.data.id });
   }
 
   // State check methods
   isActive(): boolean {
-    return this.status === 'ACTIVE';
+    return this._status === 'ACTIVE';
   }
 
   isCompleted(): boolean {
-    return this.status === 'COMPLETED';
+    return this._status === 'COMPLETED';
   }
 
   isCancelled(): boolean {
-    return this.status === 'CANCELLED';
-  }
-
-  canBeModified(): boolean {
-    return this.status === 'DRAFT' || this.status === 'PENDING';
+    return this._status === 'CANCELLED';
   }
 }
