@@ -2,23 +2,38 @@
 
 ### 🏗️ Architecture patterns
 
-- DI (use Awilix for Dependency Injection)
-- DDD (Domain-Driven Design)
-- CRDT (IndexedDB + OPFS + CRDT (Y.js) for offline synchronization)
-- Microservices
-- PWA
-- Metaprogramming and DSL
+- **Manual DI** ( Dependency Injection )
+- **DDD** ( Domain-Driven Design )
+- **CRDT** (IndexedDB + OPFS + CRDT (Y.js) for offline synchronization)
+- **Microservices**
+- **PWA**
+- **Metaprogramming and DSL**
+- **CQRS** (Command Query Responsibility Segregation for splitting read/write operations)
+- **Saga** ( for management distributed transactions )
+- **Strategy** ( for different pricing strategies )
+- **Factory** ( for different user types )
+- **Event Sourcing** ( for audit and analytics )
+- **Module Federation** ( for sale of various modules )
+- **Clean Architecture**
+
+### Principe
+- Full type safety 
+
 
 ### Stack technologies:
 - **Monorepo**: Turborepo
-- **Frontend**: Next.js 15.5.4 + React 19 + TypeScript
-- **Backend**: Node.js + Fastify (microservices)
+- **Languages**: TypeScript
+- **Framework**: Next.js 15.5.4
+- **Backend**: Node.js
+- **Microservices**: Fastify
 - **Database**: Supabase (PostgreSQL)
-- **ORM**: Prisma + Zod
-- **Caching**: TanStack Query v5
-- **DI**: Awilix
-- **UI**: Ant Design + Tailwind CSS
-- **PWA**: next-pwa
+- **ORM**: Prisma
+- **Validation**: Zod
+- **Authorization**: Next Auth
+- **Caching**: TanStack Query
+- **UI**: Ant Design
+- **CSS**: Tailwind
+- **PWA**: Next-Pwa
 - **Offline**: IndexedDB + OPFS + CRDT (Y.js)
 - **WebSocket**: Socket.io
 - **WebRTC**: to support video consultations

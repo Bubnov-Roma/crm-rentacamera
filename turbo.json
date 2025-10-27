@@ -12,7 +12,15 @@
     },
     "lint": {},
     "test": {},
-    "type-check": {},
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "type-check:ci": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "env": ["CI"]
+    },
     "clean": {
       "cache": false
     },
