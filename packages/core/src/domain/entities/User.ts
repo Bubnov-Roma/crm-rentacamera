@@ -1,23 +1,8 @@
-export type UserRole = 'ADMIN' | 'MANAGER' | 'CLIENT' | 'PARTNER';
-
-export interface UserProfile {
-  id: string;
-  email: string;
-  phone: string;
-  firstName: string;
-  lastName: string;
-  role: UserRole;
-  discountRate: number;
-  isActive: boolean;
-  isVerified: boolean;
-  avatar?: string;
-  lastLoginAt?: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { UserRole } from '@prisma/client';
+import { UserType } from 'src/infrastructure/types/user-types';
 
 export class User {
-  constructor(private profile: UserProfile) {}
+  constructor(private profile: UserType) {}
 
   get id(): string {
     return this.profile.id;
@@ -37,7 +22,7 @@ export class User {
   get role(): UserRole {
     return this.profile.role;
   }
-  get discountRate(): number {
+  get discountRate(): number | null {
     return this.profile.discountRate;
   }
   get isActive(): boolean {
@@ -46,66 +31,26 @@ export class User {
   get isVerified(): boolean {
     return this.profile.isVerified;
   }
-  get avatar(): string | undefined {
+  get avatar(): string | null {
     return this.profile.avatar;
   }
-  get lastLoginAt(): Date | undefined {
+  get lastLoginAt(): Date | null {
     return this.profile.lastLoginAt;
   }
-  get createdAt(): Date | undefined {
+  get createdAt(): Date {
     return this.profile.createdAt;
   }
-  get updatedAt(): Date | undefined {
+  get updatedAt(): Date {
     return this.profile.updatedAt;
   }
 
-  static fromPrisma(data: {
-    id: string;
-    email: string;
-    phone: string;
-    firstName: string;
-    lastName: string;
-    role: UserRole;
-    discountRate: number | null;
-    isActive: boolean;
-    isVerified: boolean;
-    avatar: string | null;
-    lastLoginAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
-  }): User {
+  static fromPrisma(data: UserType): User {
     return new User({
-      id: data.id,
-      email: data.email,
-      phone: data.phone,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      role: data.role,
-      discountRate: data.discountRate || 0,
-      isActive: data.isActive,
-      isVerified: data.isVerified,
-      avatar: data.avatar || undefined,
-      lastLoginAt: data.lastLoginAt || undefined,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
+      ...data,
     });
   }
 
-  toPrisma(): {
-    id: string;
-    email: string;
-    phone: string;
-    firstName: string;
-    lastName: string;
-    role: UserRole;
-    discountRate: number | null;
-    isActive: boolean;
-    isVerified: boolean;
-    avatar?: string;
-    lastLoginAt?: Date;
-    createdAt?: Date;
-    updatedAt?: Date;
-  } {
+  toPrisma(): UserType {
     return {
       id: this.id,
       email: this.email,
@@ -116,20 +61,20 @@ export class User {
       discountRate: this.discountRate,
       isActive: this.isActive,
       isVerified: this.isVerified,
-      ...(this.avatar && { avatar: this.avatar }),
-      ...(this.lastLoginAt && { lastLoginAt: this.lastLoginAt }),
-      ...(this.createdAt && { createdAt: this.createdAt }),
-      ...(this.updatedAt && { updatedAt: this.updatedAt }),
+      avatar: this.avatar || null,
+      lastLoginAt: this.lastLoginAt || null,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     };
   }
 
   // Business methods
-  updateProfile(updates: Partial<UserProfile>): void {
+  updateProfile(updates: Partial<User>): void {
     this.profile = { ...this.profile, ...updates };
   }
 
   hasDiscount(): boolean {
-    return this.discountRate > 0;
+    return this.discountRate! > 0;
   }
 
   canMakeBooking(): boolean {
@@ -140,24 +85,19 @@ export class User {
     return `${this.firstName} ${this.lastName}`;
   }
 
-  static create(properties: {
-    email: string;
-    phone: string;
-    firstName: string;
-    lastName: string;
-    passwordHash: string;
-    role?: UserRole;
-  }): User {
+  /* Fabric method for creating New booking */
+  static create(properties: UserType): User {
     return new User({
+      ...properties,
       id: `user_${Date.now()}`,
-      email: properties.email,
-      phone: properties.phone,
-      firstName: properties.firstName,
-      lastName: properties.lastName,
-      role: properties.role || 'CLIENT',
       discountRate: 0,
       isActive: true,
       isVerified: false,
+      role: 'CLIENT',
     });
+  }
+
+  static reconstitute(data: UserType): User {
+    return new User(data);
   }
 }
