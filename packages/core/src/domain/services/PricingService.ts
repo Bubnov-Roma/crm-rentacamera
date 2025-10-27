@@ -1,4 +1,5 @@
-import { Money, RentalPeriod } from '../entities/Booking';
+import { Money } from '../value-objects/Money';
+import { RentalPeriod } from '../value-objects/RentalPeriod';
 
 export interface IPricingService {
   calculateTotal(params: {
@@ -14,8 +15,7 @@ export class PricingService implements IPricingService {
     period: RentalPeriod;
     discountRate: number;
   }): Promise<Money> {
-    // Cost calculation logic
-    // Temporary stub
+    // TODO: Cost calculation logic . Temporary stub
     const hours = params.period.getDurationInHours();
     const baseRate = 100; // Base hour rate
 
