@@ -1,42 +1,12 @@
-export type BookingStatus =
-  | 'DRAFT'
-  | 'PENDING'
-  | 'CONFIRMED'
-  | 'ACTIVE'
-  | 'COMPLETED'
-  | 'CANCELLED';
+import { DomainBookingStatus } from 'src/infrastructure/types/booking-types';
+import { RentalPeriod } from '../value-objects/RentalPeriod';
+import { Money } from '../value-objects/Money';
 
 export interface DomainEvent {
   type: string;
   payload: Record<string, unknown>;
   timestamp: Date;
 }
-
-// Value Objects for business logic
-export class Money {
-  constructor(
-    public readonly amount: number,
-    public readonly currency: string = 'RUB',
-  ) {
-    if (amount < 0) throw new Error('Amount cannot be negative');
-  }
-}
-
-export class RentalPeriod {
-  constructor(
-    public readonly startDate: Date,
-    public readonly endDate: Date,
-  ) {
-    if (startDate >= endDate) {
-      throw new Error('Start date must be before end date');
-    }
-  }
-
-  getDurationInHours(): number {
-    return Math.ceil((this.endDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60));
-  }
-}
-
 export interface BookingData {
   id: string;
   number: string;
@@ -45,13 +15,13 @@ export interface BookingData {
   period: RentalPeriod;
   totalAmount: Money;
   depositAmount: Money;
-  status: BookingStatus;
+  status: DomainBookingStatus;
   penaltyAmount?: Money;
 }
 
 export class Booking {
   private domainEvents: DomainEvent[] = [];
-  private _status: BookingStatus;
+  private _status: DomainBookingStatus;
 
   constructor(private data: BookingData) {
     this._status = data.status;
@@ -64,7 +34,7 @@ export class Booking {
     }
   }
 
-  // Fabric method for creating New booking
+  /* Fabric method for creating New booking */
   static create(params: Omit<BookingData, 'id' | 'number' | 'status'>): Booking {
     const id = `booking_${Date.now()}`;
     const number = `BK-${Date.now()}`;
@@ -141,7 +111,7 @@ export class Booking {
   get penaltyAmount(): Money {
     return this.data.penaltyAmount || new Money(0);
   }
-  get status(): BookingStatus {
+  get status(): DomainBookingStatus {
     return this._status;
   }
   get startDate(): Date {
