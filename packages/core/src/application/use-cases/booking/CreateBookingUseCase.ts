@@ -1,27 +1,20 @@
-import { IEquipmentRepository, IUserRepository } from 'src/infrastructure/interfaces';
-import { Booking, Money, RentalPeriod } from '../../domain/entities/Booking';
-import { IBookingRepository } from '../../infrastructure/interfaces/IBookingRepository';
-import { PricingService } from 'src/domain/services/pricing-service';
-
-export class CreateBookingCommand {
-  constructor(
-    public readonly userId: string,
-    public readonly pickupLocationId: string,
-    public readonly startDate: Date,
-    public readonly endDate: Date,
-    public readonly equipmentItems: Array<{
-      equipmentInstanceId: string;
-      quantity: number;
-    }>,
-  ) {}
-}
+import { Booking } from 'src/domain/entities/Booking';
+import { PricingService } from 'src/domain/services/PricingService';
+import { CreateBookingCommand } from 'src/application/commands/booking/CreateBookingCommand';
+import { IBookingRepository } from 'src/application/ports/repositories/IBookingRepository';
+import { IUserRepository } from 'src/application/ports/repositories/IUserRepository';
+import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
+import { RentalPeriod } from 'src/domain/value-objects/RentalPeriod';
+import { Money } from 'src/domain/value-objects/Money';
+import { INotificationService } from 'src/application/ports/services/INotificationService';
 
 export class CreateBookingUseCase {
   constructor(
-    private bookingRepository: IBookingRepository,
-    private userRepository: IUserRepository,
-    private equipmentRepository: IEquipmentRepository,
-    private pricingService: PricingService,
+    private readonly bookingRepository: IBookingRepository,
+    private readonly userRepository: IUserRepository,
+    private readonly equipmentRepository: IEquipmentRepository,
+    private readonly pricingService: PricingService,
+    private readonly notificationService: INotificationService,
   ) {}
 
   async execute(command: CreateBookingCommand): Promise<{ booking: Booking }> {
@@ -42,7 +35,6 @@ export class CreateBookingUseCase {
         throw new Error(`Equipment ${item.equipmentInstanceId} is not available`);
       }
     }
-
     // Create RentalPeriod value object
     const period = new RentalPeriod(command.startDate, command.endDate);
     // Cost calculating
@@ -51,11 +43,7 @@ export class CreateBookingUseCase {
       period,
       discountRate: user.discountRate || 0,
     });
-
     const depositAmount = new Money(totalAmount.amount * 0.3); // 30% deposit
-
-    // Booking number generation
-    // const _bookingNumber = `BK-${Date.now()}`;
     // Creating booking
     const booking = Booking.create({
       userId: command.userId,
@@ -66,6 +54,7 @@ export class CreateBookingUseCase {
     });
     // Saving
     await this.bookingRepository.save(booking);
+    await this.notificationService.sendBookingConfirmation(user, booking);
 
     return { booking };
   }
