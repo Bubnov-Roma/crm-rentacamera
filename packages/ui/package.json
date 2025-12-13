@@ -9,7 +9,10 @@
     "build": "vite build",
     "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "security:audit": "pnpm audit --audit-level high",
+    "security:check": "pnpm outdated && pnpm audit",
+    "security:fix": "pnpm audit fix"
   },
   "dependencies": {
     "react": "^18.2.0",
