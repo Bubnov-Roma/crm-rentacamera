@@ -10,7 +10,10 @@
     "dev": "tsc --watch",
     "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
     "type-check": "tsc --noEmit",
-    "type-check:ci": "tsc --noEmit --skipLibCheck --noImplicitAny false"
+    "type-check:ci": "tsc --noEmit --skipLibCheck --noImplicitAny false",
+    "security:audit": "pnpm audit --audit-level high",
+    "security:check": "pnpm outdated && pnpm audit",
+    "security:fix": "pnpm audit fix"
   },
   "dependencies": {
     "lib0": "^0.2.101",
