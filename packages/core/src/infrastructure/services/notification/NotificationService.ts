@@ -5,20 +5,21 @@ import {
   NotificationMessage,
   NotificationProvider,
   NotificationTemplate,
-} from '../types/notification-service-types';
-import { ResendEmailProvider } from './notification/providers/ResendEmailProvider';
-import { TelegramProvider } from './notification/providers/TelegramProvider';
-import { TextBeltSMSProvider } from './notification/providers/TextBeltSMSProvider';
+} from '../../types/notification-service-types';
+import { ResendEmailProvider } from './providers/email/ResendEmailProvider';
+import { TelegramProvider } from './providers/telegram/TelegramProvider';
+import { TextBeltSMSProvider } from './providers/sms/TextBeltSMSProvider';
 import { Booking } from 'src/domain/entities/Booking';
 import { PenaltyCalculationResult } from 'src/domain/services/PenaltyService';
 import { INotificationService } from 'src/application/ports/services/INotificationService';
 import { Equipment } from 'src/domain/entities/Equipment';
 import { RentalPoint } from 'src/domain/entities/RentalPoint';
-import { WebPushProviderFactory } from './notification/providers/WebPushProviderFactory';
 import {
   NotificationRecipient,
   RecipientFactory,
 } from 'src/domain/value-objects/NotificationRecipient';
+import { WebPushProviderFactory } from 'src/infrastructure/services/notification/providers/push/web-push/WebPushProviderFactory';
+import { BookingTemplates } from './templates/BookingTemplates';
 
 export class NotificationService implements INotificationService {
   private readonly providers: Map<string, NotificationProvider> = new Map();
@@ -52,60 +53,11 @@ export class NotificationService implements INotificationService {
   }
   private initializeTemplates(): void {
     const defaultTemplates: NotificationTemplate[] = [
-      {
-        id: 'booking_confirmation',
-        type: 'BOOKING_CONFIRMATION',
-        subject: 'Бронь подтверждена - Rentacamera.ru',
-        body: `Ваш заказ #{bookingNumber} забронирован! 🎉
-
-        Сумма: {totalAmount} ₽
-        Период аренды: с {startDate} по {endDate}
-        Место получения: {location}
-        
-        Спасибо за выбор нашей компании!`,
-        channels: ['EMAIL', 'TELEGRAM'],
-      },
-      {
-        id: 'return_reminder',
-        type: 'REMINDER',
-        subject: 'Напоминание о возврате оборудования',
-        body: `Напоминаем, что заказ #{bookingNumber} необходимо вернуть до {returnTime}.
-
-        Пожалуйста, не забудьте вернуть оборудование вовремя!`,
-        channels: ['TELEGRAM', 'SMS'],
-      },
-      {
-        id: 'penalty_notification',
-        type: 'PENALTY',
-        subject: 'Штраф за нарушение условий аренды',
-        body: `По заказу #{bookingNumber} начислен штраф: {penaltyAmount} ₽.
-        
-        Причина: {penaltyReason}
-        
-        Для уточнения деталей свяжитесь с нашим менеджером.`,
-        channels: ['EMAIL'],
-      },
-      {
-        id: 'equipment_transfer',
-        type: 'TRANSFER',
-        subject: 'Перемещение оборудования между филиалами',
-        body: `Оборудование {equipmentName} ({serialNumber}) запланировано к перемещению из {fromLocation} в {toLocation}.
-                  
-          Дата отправки: {scheduledDate}
-          Примерная дата прибытия: {estimatedArrival}
-        `,
-        channels: ['EMAIL', 'TELEGRAM'],
-      },
-      {
-        id: 'booking_cancellation',
-        type: 'CANCELLATION',
-        subject: 'Отмена бронирования',
-        body: `Заказ #{bookingNumber} отменен.{penaltyInfo}
-         
-         Для уточнения деталей свяжитесь с нашим менеджером.
-        `,
-        channels: ['EMAIL'],
-      },
+      BookingTemplates.CONFIRMATION,
+      BookingTemplates.REMINDER,
+      BookingTemplates.PENALTY,
+      BookingTemplates.TRANSFER,
+      BookingTemplates.CANCELLATION,
     ];
     defaultTemplates.forEach((template) => {
       this.templates.set(template.type, template);
