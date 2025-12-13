@@ -75,6 +75,7 @@ export class PrismaBookingRepository implements IBookingRepository {
       depositAmount,
       status: StatusMapper.toDomain(prismaData.status), // TODO сделать проверку на статус до присвоения
       penaltyAmount,
+      equipmentIds: [],
     });
   }
 }
