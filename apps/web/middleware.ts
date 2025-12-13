@@ -4,7 +4,10 @@ import type { NextRequest } from 'next/server';
 const rateLimit = new Map();
 
 export function middleware(request: NextRequest) {
-  const ip = request.ip || 'unknown';
+  const forwarded = request.headers.get('x-forwarded-for');
+  const ip = forwarded ? forwarded.split(',')[0] : 'unknown';
+
+  // rate limiting
   const now = Date.now();
   const windowMs = 60000;
   const maxRequests = 100;
