@@ -6,10 +6,13 @@ import { IUserRepository } from 'src/application/ports/repositories/IUserReposit
 import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
 import { ITransferRepository } from 'src/application/ports/repositories/ITransferRepository';
 import { IRentalPointRepository } from 'src/application/ports/repositories/IRentalPointRepository';
+import { IEventPublisher } from 'src/application/ports/events/IEventPublisher';
 // Repositories
 import { PrismaBookingRepository } from 'src/infrastructure/repositories/PrismaBookingRepository';
 import { PrismaUserRepository } from 'src/infrastructure/repositories/PrismaUserRepository';
 import { PrismaEquipmentRepository } from 'src/infrastructure/repositories/PrismaEquipmentRepository';
+import { PrismaTransferRepository } from 'src/infrastructure/repositories/PrismaTransferRepository';
+import { PrismaRentalPointRepository } from 'src/infrastructure/repositories/PrismaRentalPointRepository';
 // Use Cases
 import { CreateBookingUseCase } from 'src/application/use-cases/booking/CreateBookingUseCase';
 import { ConfirmBookingUseCase } from 'src/application/use-cases/booking/ConfirmBookingUseCase';
@@ -21,10 +24,22 @@ import { AvailabilityService } from 'src/domain/services/AvailabilityService';
 import { PenaltyService } from 'src/domain/services/PenaltyService';
 import { LogisticsService } from 'src/domain/services/LogisticsService';
 // Infrastructure Services
-import { NotificationService } from 'src/infrastructure/services/NotificationService';
+import { NotificationService } from 'src/infrastructure/services/notification/NotificationService';
 import { INotificationService } from 'src/application/ports/services/INotificationService';
+import { SimpleEventPublisher } from '../events/SimpleEventPublisher';
+import { BookingEventHandler } from 'src/application/event-handlers/BookingEventHandler';
+// Events
+import {
+  BookingCreatedEvent,
+  BookingConfirmedEvent,
+  BookingCancelledEvent,
+  BookingCompletedEvent,
+  BookingActivatedEvent,
+} from 'src/domain/events/BookingEvents';
+// Config
 import { notificationConfig } from './notification.config';
 interface ContainerDependencies {
+  // Database
   prisma: PrismaClient;
   // Repositories - infrastructure layer
   bookingRepository: IBookingRepository;
@@ -37,7 +52,11 @@ interface ContainerDependencies {
   availabilityService: AvailabilityService;
   penaltyService: PenaltyService;
   logisticService: LogisticsService;
+  // Services - Infrastructure Layer
   notificationService: INotificationService;
+  eventPublisher: IEventPublisher;
+  // Event Handlers
+  bookingEventHandler: BookingEventHandler;
   // Use Cases - Application Layer
   createBookingUseCase: CreateBookingUseCase;
   confirmBookingUseCase: ConfirmBookingUseCase;
@@ -51,17 +70,51 @@ export class Container {
   private static instances: Partial<ContainerDependencies> = {};
   private static initialized = false;
 
+  private static initializeEventHandlers(): void {
+    const eventPublisher = this.instances.eventPublisher as SimpleEventPublisher;
+    const bookingEventHandler = this.instances.bookingEventHandler as BookingEventHandler;
+
+    eventPublisher.subscribe(BookingCreatedEvent.name, (event: BookingCreatedEvent) =>
+      bookingEventHandler.handleBookingCreated(event),
+    );
+
+    eventPublisher.subscribe(BookingConfirmedEvent.name, (event: BookingConfirmedEvent) =>
+      bookingEventHandler.handleBookingConfirmed(event),
+    );
+
+    eventPublisher.subscribe(BookingCancelledEvent.name, (event: BookingCancelledEvent) =>
+      bookingEventHandler.handleBookingCancelled(event),
+    );
+
+    eventPublisher.subscribe(BookingCompletedEvent.name, (event: BookingCompletedEvent) =>
+      bookingEventHandler.handleBookingCompleted(event),
+    );
+
+    eventPublisher.subscribe(BookingActivatedEvent.name, (event: BookingActivatedEvent) =>
+      bookingEventHandler.handleBookingActivated(event),
+    );
+  }
+
   static initialize(): void {
-    if (this.initialized) return;
+    if (this.initialized) {
+      return;
+    }
+
+    console.log('🔄 Container initialize...');
 
     // Database
     const prisma = new PrismaClient();
     this.instances.prisma = prisma;
+    console.log('✅ Prisma Client initialize');
 
     // Repositories
     this.instances.bookingRepository = new PrismaBookingRepository(prisma);
     this.instances.userRepository = new PrismaUserRepository(prisma);
     this.instances.equipmentRepository = new PrismaEquipmentRepository(prisma);
+    this.instances.equipmentRepository = new PrismaEquipmentRepository(prisma);
+    this.instances.transferRepository = new PrismaTransferRepository(prisma);
+    this.instances.rentalPointRepository = new PrismaRentalPointRepository(prisma);
+    console.log('✅ Repositories initialize');
 
     // Domain Services
     this.instances.pricingService = new PricingService();
@@ -71,38 +124,90 @@ export class Container {
       this.get('logisticService'),
     );
     this.instances.penaltyService = new PenaltyService();
-    this.instances.notificationService = new NotificationService(notificationConfig);
     this.instances.logisticService = new LogisticsService();
+    console.log('✅ Domain Services initialized');
+
+    // INFRASTRUCTURE SERVICES
+    this.instances.notificationService = new NotificationService(notificationConfig);
+    this.instances.eventPublisher = new SimpleEventPublisher();
+    console.log('✅ Infrastructure services have been initialized');
+
+    // EVENT HANDLERS
+    this.instances.bookingEventHandler = new BookingEventHandler(
+      this.instances.notificationService,
+      this.instances.userRepository,
+      this.instances.bookingRepository,
+    );
+    console.log('✅ Event handlers created');
+
+    //  AvailabilityService initialize
+    this.instances.availabilityService = new AvailabilityService(
+      this.instances.equipmentRepository,
+      this.instances.transferRepository,
+      this.instances.logisticService,
+    );
+    console.log('✅ AvailabilityService initialized');
+
+    // this.instances.transferRepository = new PrismaTransferRepository(prisma);
+    // this.instances.rentalPointRepository = new PrismaRentalPointRepository(prisma);
+
+    // console.log('✅ Repositories initialize');
 
     // Use Cases
     this.instances.createBookingUseCase = new CreateBookingUseCase(
-      this.get('bookingRepository'),
-      this.get('userRepository'),
-      this.get('equipmentRepository'),
-      this.get('pricingService'),
-      this.get('notificationService'),
+      this.instances.bookingRepository,
+      this.instances.userRepository,
+      this.instances.equipmentRepository,
+      this.instances.pricingService,
+      this.instances.notificationService,
+      this.instances.eventPublisher,
     );
+
     this.instances.confirmBookingUseCase = new ConfirmBookingUseCase(
-      this.get('bookingRepository'),
-      this.get('notificationService'),
+      this.instances.bookingRepository,
+      this.instances.notificationService,
+      this.instances.eventPublisher,
     );
+
     this.instances.cancelBookingUseCase = new CancelBookingUseCase(
-      this.get('bookingRepository'),
-      this.get('penaltyService'),
-      this.get('notificationService'),
-      this.get('userRepository'),
+      this.instances.bookingRepository,
+      this.instances.penaltyService,
+      this.instances.notificationService,
+      this.instances.userRepository,
+      this.instances.eventPublisher,
     );
+
     this.instances.transferEquipmentUseCase = new TransferEquipmentUseCase(
-      this.get('equipmentRepository'),
-      this.get('transferRepository'),
-      this.get('rentalPointRepository'),
-      this.get('logisticService'),
-      this.get('notificationService'),
+      this.instances.equipmentRepository,
+      this.instances.transferRepository,
+      this.instances.rentalPointRepository,
+      this.instances.logisticService,
+      this.instances.notificationService,
     );
+    console.log('✅ Use Cases initialize');
+
+    // Set event handlers
+    this.initializeEventHandlers();
+    console.log('✅ Event handlers initialize');
+
     this.initialized = true;
+    console.log('🎉 Container initialize successful!');
   }
 
-  // Getters
+  // AUXILIARY METHOD FOR OBTAINING DEPENDENCIES
+  private static get<K extends DependencyKey>(key: K): ContainerDependencies[K] {
+    if (!this.initialized) {
+      this.initialize();
+    }
+
+    const instance = this.instances[key];
+    if (!instance) {
+      throw new Error(`Dependency "${key}" not found. Container not properly initialized.`);
+    }
+    return instance;
+  }
+
+  // 📦 Getters
   static getPrisma(): PrismaClient {
     return this.get('prisma');
   }
@@ -123,6 +228,14 @@ export class Container {
     return this.get('pricingService');
   }
 
+  static getNotificationService(): INotificationService {
+    return this.get('notificationService');
+  }
+
+  static getEventPublisher(): IEventPublisher {
+    return this.get('eventPublisher');
+  }
+
   static getCreateBookingUseCase(): CreateBookingUseCase {
     return this.get('createBookingUseCase');
   }
@@ -131,32 +244,44 @@ export class Container {
     return this.get('confirmBookingUseCase');
   }
 
-  // Private methods
-  private static get<K extends DependencyKey>(key: K): ContainerDependencies[K] {
-    const instance = this.instances[key];
-    if (!instance) {
-      throw new Error(`Dependency ${key} not found. Did you call initialize()?`);
-    }
-    return instance;
+  static getCancelBookingUseCase(): CancelBookingUseCase {
+    return this.get('cancelBookingUseCase');
   }
 
+  static getTransferEquipmentUseCase(): TransferEquipmentUseCase {
+    return this.get('transferEquipmentUseCase');
+  }
+
+  // 🧹 PRUNE
   static async dispose(): Promise<void> {
+    console.log('🧹 Container cleaning...');
+
     const prisma = this.instances.prisma;
     if (prisma) {
       await prisma.$disconnect();
+      console.log('✅ Prisma Client cleaning done');
     }
     this.instances = {};
     this.initialized = false;
+    console.log('✅ Container cleaning done');
   }
 
-  // Modules
+  // 🎯 Modules
   static initializeAdminModule(): void {
     this.initialize();
+    console.log('👔 Admin module initialized');
     // TODO - Add specific admin services
   }
 
   static initializeClientModule(): void {
     this.initialize();
+    console.log('👤 Client module initialized');
     // TODO - Add specific client services
+  }
+
+  static initializePartnerModule(): void {
+    this.initialize();
+    console.log('🤝 Affiliate module initialized');
+    // TODO - Add specific affiliate services
   }
 }

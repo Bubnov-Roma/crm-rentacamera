@@ -1,4 +1,4 @@
-import { BrowserEnvironment, EnvironmentCheckResult } from '../types/web-push-types';
+import { BrowserEnvironment, EnvironmentCheckResult } from '../../../../../types/web-push-types';
 
 export class WebPushEnvironmentService {
   static checkEnvironment(): EnvironmentCheckResult {

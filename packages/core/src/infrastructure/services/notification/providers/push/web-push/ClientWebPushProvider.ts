@@ -2,7 +2,7 @@ import {
   NotificationMessage,
   NotificationProvider,
 } from 'src/infrastructure/types/notification-service-types';
-import { WebPushEnvironmentService } from '../../WebPushEnvironmentService';
+import { WebPushEnvironmentService } from './WebPushEnvironmentService';
 import {
   NotificationOptions,
   PushSubscriptionOptions,
@@ -18,7 +18,7 @@ export interface WebPushConfig {
 
 type WebPushResult<T> = { success: true; data: T } | { success: false; error: string };
 
-export class WebPushProvider implements NotificationProvider {
+export class ClientWebPushProvider implements NotificationProvider {
   private vapidPublicKey: string;
   constructor(private readonly _config: WebPushConfig) {
     this.vapidPublicKey = _config.vapidPublicKey;

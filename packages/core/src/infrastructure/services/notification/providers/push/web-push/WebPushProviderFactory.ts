@@ -2,12 +2,12 @@ import {
   NotificationProvider,
   PushProviderConfig,
 } from 'src/infrastructure/types/notification-service-types';
-import { WebPushProvider, WebPushConfig } from './WebPushProvider';
+import { ClientWebPushProvider, WebPushConfig } from './ClientWebPushProvider';
 import { ServerWebPushProvider, ServerWebPushConfig } from './ServerWebPushProvider';
 
 export class WebPushProviderFactory {
   static createClientProvider(config: WebPushConfig): NotificationProvider {
-    return new WebPushProvider(config);
+    return new ClientWebPushProvider(config);
   }
 
   static createServerProvider(config: ServerWebPushConfig): NotificationProvider {
@@ -24,7 +24,7 @@ export class WebPushProviderFactory {
         vapidPrivateKey: config.vapidPrivateKey,
         serviceWorkerPath: config.serviceWorkerPath,
       };
-      return new WebPushProvider(clientConfig);
+      return new ClientWebPushProvider(clientConfig);
     } else {
       if (!config.vapidPrivateKey || !config.email) {
         throw new Error('vapidPrivateKey and email are required for server-side WebPush');

@@ -1,4 +1,5 @@
 import { CancelBookingCommand } from 'src/application/commands/booking/CancelBookingCommand';
+import { IEventPublisher } from 'src/application/ports/events/IEventPublisher';
 import { IBookingRepository } from 'src/application/ports/repositories/IBookingRepository';
 import { IUserRepository } from 'src/application/ports/repositories/IUserRepository';
 import { INotificationService } from 'src/application/ports/services/INotificationService';
@@ -10,6 +11,7 @@ export class CancelBookingUseCase {
     public readonly penaltyService: PenaltyService,
     public readonly notificationService: INotificationService,
     public readonly userRepository: IUserRepository,
+    public readonly eventPublisher: IEventPublisher,
   ) {}
 
   async execute(command: CancelBookingCommand): Promise<{ penaltyAmount: number }> {
@@ -26,8 +28,20 @@ export class CancelBookingUseCase {
       booking.applyPenalty(penaltyResult.penaltyAmount);
     }
     booking.cancel(command.reason);
+
+    // create booking
     await this.bookingRepository.save(booking);
+
+    // public event
+    const domainEvents = booking.getDomainEvents();
+    for (const event of domainEvents) {
+      await this.eventPublisher.publish(event.payload);
+    }
+    booking.clearDomainEvents();
+
+    // send notification
     await this.notificationService.sendCancellationNotification(booking, penaltyResult, user);
+
     return {
       penaltyAmount: penaltyResult.penaltyAmount.amount,
     };

@@ -1,19 +1,19 @@
 export type MassagerType = 'EMAIL' | 'SMS' | 'TELEGRAM' | 'PUSH';
 
 export type NotificationMessage = {
-  title: string;
-  body: string;
-  type: MassagerType;
-  recipient: string;
-  metadata?: Record<string, unknown>;
+  readonly title: string;
+  readonly body: string;
+  readonly type: MassagerType;
+  readonly recipient: string;
+  readonly metadata?: Record<string, unknown>;
 };
 
 export type NotificationTemplate = {
-  id: string;
-  type: 'BOOKING_CONFIRMATION' | 'REMINDER' | 'PENALTY' | 'TRANSFER' | 'CANCELLATION';
-  subject: string;
-  body: string;
-  channels: MassagerType[];
+  readonly id: string;
+  readonly type: 'BOOKING_CONFIRMATION' | 'REMINDER' | 'PENALTY' | 'TRANSFER' | 'CANCELLATION';
+  readonly subject: string;
+  readonly body: string;
+  readonly channels: MassagerType[];
 };
 
 export interface NotificationProvider {
@@ -22,38 +22,38 @@ export interface NotificationProvider {
 }
 
 export type NotificationConfig = {
-  providers: {
-    email?: EmailProviderConfig;
-    sms?: SMSProviderConfig;
-    telegram?: TelegramProviderConfig;
-    push?: PushProviderConfig;
+  readonly providers: {
+    readonly email?: EmailProviderConfig;
+    readonly sms?: SMSProviderConfig;
+    readonly telegram?: TelegramProviderConfig;
+    readonly push?: PushProviderConfig;
   };
-  templates: NotificationTemplate[];
-  defaultChannels: MassagerType[];
+  readonly templates: NotificationTemplate[];
+  readonly defaultChannels: MassagerType[];
 };
 
 export type EmailProviderConfig = {
-  provider: 'reserved' | 'brevo' | 'gmail';
-  apiKey: string;
-  fromEmail: string;
-  fromName?: string;
+  readonly provider: 'reserved' | 'brevo' | 'gmail';
+  readonly apiKey: string;
+  readonly fromEmail: string;
+  readonly fromName?: string;
 };
 
 export type SMSProviderConfig = {
-  provider: 'twilio' | 'textbelt';
-  apiKey: string;
-  fromNumber: string;
+  readonly provider: 'twilio' | 'textbelt';
+  readonly apiKey: string;
+  readonly fromNumber: string;
 };
 
 export type TelegramProviderConfig = {
-  botToken: string;
-  chatId?: string;
+  readonly botToken: string;
+  readonly chatId?: string;
 };
 
 export type PushProviderConfig = {
-  provider: 'firebase' | 'web-push';
-  vapidPublicKey?: string;
-  vapidPrivateKey?: string;
-  serviceWorkerPath?: string;
-  email: string;
+  readonly provider: 'firebase' | 'web-push';
+  readonly vapidPublicKey?: string;
+  readonly vapidPrivateKey?: string;
+  readonly serviceWorkerPath?: string;
+  readonly email: string;
 };

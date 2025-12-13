@@ -53,7 +53,7 @@ crm-rentacamera/
 │   ├── contracts/ - smart-contracts
 │   │
 │   ├── core/ - domain logic **DDD**
-│   │   ├── index.ts
+│   │   ├── index.ts  # Public API facade
 │   │   ├── package.json
 │   │   ├── tsconfig.json
 │   │   ├── .turbo
@@ -61,70 +61,91 @@ crm-rentacamera/
 │   │   ├── node_modules/
 │   │   └── src/
 │   │       ├── index.ts
-│   │       ├── application/ **Application Layer**
-│   │       │   ├── commands/
+│   │       ├── application/                      # Application Layer
+│   │       │   ├── commands/                     # Команды (CQRS)
 │   │       │   │   └── booking/
 │   │       │   │       ├── CancelBookingCommand.ts
 │   │       │   │       ├── ConfirmBookingCommand.ts
 │   │       │   │       ├── CreateBookingCommand.ts
 │   │       │   │       └── TransferEquipmentCommand.ts
-│   │       │   ├── ports/
+│   │       │   ├── event-handlers/               # Обработчики событий
+│   │       │   ├── ports/                        # Интерфейсы (контракты) для внешних систем
+│   │       │   │   ├── gateways/                 # ← ДОБАВИТЬ для внешних сервисов
 │   │       │   │   ├── repositories/
 │   │       │   │   │   ├── IBookingRepository.ts
 │   │       │   │   │   ├── IUserRepository.ts
 │   │       │   │   │   └── IEquipmentRepository.ts
 │   │       │   │   └── services/
 │   │       │   │       └── INotificationService.ts
-│   │       │   └── use-cases/
+│   │       │   └── use-cases/                    # Use Cases (бизнес-сценарии)
 │   │       │       └── booking/
 │   │       │           ├── CancelBookingUseCase.ts
 │   │       │           ├── ConfirmBookingUseCase.ts
 │   │       │           ├── CreateBookingUseCase.ts
 │   │       │           └── TransferEquipmentUseCase
-│   │       ├── domain/. **Domain Layer**
-│   │       │   ├── entities/
+│   │       ├── domain/                                   # Domain Layer
+│   │       │   ├── events/                            # События предметной области для Event Sourcing
+│   │       │   ├── entities/                          # Сущности (объекты с идентификатором)
 │   │       │   │   ├── Booking.ts
 │   │       │   │   ├── Equipment.ts
 │   │       │   │   ├── EquipmentInstance.ts
 │   │       │   │   ├── RentalPoint.ts
 │   │       │   │   ├── Transfer.ts
 │   │       │   │   └── User.ts
-│   │       │   ├── exceptions/
+│   │       │   ├── exceptions/                           # Доменные исключения
 │   │       │   │   ├── DomainException.ts // Empty !!!!
 │   │       │   │   └── BookingException.ts // Empty !!!!
-│   │       │   ├── services/
+│   │       │   ├── services/                             # Доменные сервисы (логика, не принадлежащая одной сущности)
 │   │       │   │   ├── AvailabilityService.ts
 │   │       │   │   ├── LogisticsService.ts
 │   │       │   │   ├── PenaltyService.ts
 │   │       │   │   └── PricingService.ts
-│   │       │   └── value-objects/
+│   │       │   ├── specifications/                       # Спецификации (бизнес-правила)
+│   │       │   └── value-objects/                        # Value Objects (объекты без идентификатора)
 │   │       │       ├── Money.ts
 │   │       │       ├── NotificationRecipient.ts
 │   │       │       ├── RentalPeriod.ts
 │   │       │       └── Address.ts // Empty !!!!
 │   │       │
-│   │       └── infrastructure/ **Infrastructure Layer**
-│   │           ├── configs/
+│   │       └── infrastructure/                     # Infrastructure Layer
+│   │           │
+│   │           ├── events/                         # Реализация событий (Event Publisher)
+│   │           ├── configs/                                 # Конфигурация (DI контейнер, настройки)
 │   │           │   ├── Container.ts
 │   │           │   └── notification.config.ts
-│   │           ├── repositories/
+│   │           ├── repositories/                           # Реализации репозиториев (Prisma)
 │   │           │   └── prisma/
 │   │           │       ├── PrismaBookingRepository.ts
 │   │           │       ├── PrismaEquipmentRepository.ts
 │   │           │       ├── PrismaRentalPointRepository.ts
 │   │           │       └── PrismaUserRepository.ts
-│   │           ├── services/
+│   │           ├── services/                             # Реализации внешних сервисов (уведомления, и т.д.)
 │   │           │   ├── notification/
+│   │           │   │   ├── NotificationService.ts
+│   │           │   │   ├── templates/                    # ← ВЫНЕСТИ шаблоны
+│   │           │   │   │   ├── BookingTemplates.ts
+│   │           │   │   │   ├── SystemTemplates.ts
+│   │           │   │   │   └── TemplateEngine.ts
 │   │           │   │   └── providers/
-│   │           │   │       ├── ResendEmailProvider.ts
+│   │           │   │       ├── email/
+│   │           │   │       │   └── ResendEmailProvider.ts
+│   │           │   │       ├── push/
+│   │           │   │       │   ├── web-push/ 
+│   │           │   │       │   │   ├── WebPushProvider.ts
+│   │           │   │       │   │   ├── ServerWebPushProvider.ts
+│   │           │   │       │   │   ├── WebPushProviderFactory.ts
+│   │           │   │       │   │   └── WebPushEnvironmentService.ts
+│   │           │   │       │   └── supabase/
+│   │           │   │       │       └── SupabasePushProvider.ts
 │   │           │   │       ├── ServerWebPushProvider.ts
 │   │           │   │       ├── TelegramProvider.ts
 │   │           │   │       ├── TextBeltSMSProvider.ts
 │   │           │   │       ├── WebPushProvider.ts
 │   │           │   │       └── WebPushProviderFactory.ts
-│   │           │   ├── NotificationService.ts
-│   │           │   └── WebPushEnvironmentService.ts
-│   │           └── types/
+│   │           │   └─ external/                 # ← ДОБАВИТЬ для внешних API
+│   │           │
+│   │           ├── messaging/                    # ← ДОБАВИТЬ для событий
+│   │           └── types/                         # Infrastructure-specific types
 │   │               ├── booking-types.ts
 │   │               ├── notification-service-types.ts
 │   │               ├── user-types.ts
