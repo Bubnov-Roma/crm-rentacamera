@@ -11,4 +11,15 @@ export class RentalPeriod {
   getDurationInHours(): number {
     return Math.ceil((this.endDate.getTime() - this.startDate.getTime()) / (1000 * 60 * 60));
   }
+  getDurationInDays(): number {
+    return Math.ceil(this.getDurationInHours() / 24);
+  }
+
+  contains(date: Date): boolean {
+    return date >= this.startDate && date <= this.endDate;
+  }
+
+  overlaps(other: RentalPeriod): boolean {
+    return this.startDate < other.endDate && this.endDate > other.startDate;
+  }
 }
