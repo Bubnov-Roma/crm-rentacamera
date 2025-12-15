@@ -9,7 +9,7 @@ import {
   BookingCreatedEvent,
 } from '../events/BookingEvents';
 
-export interface DomainEvent<T = unknown> {
+export interface DomainEvent<T = object> {
   readonly type: string;
   readonly payload: T;
   readonly timestamp: Date;
