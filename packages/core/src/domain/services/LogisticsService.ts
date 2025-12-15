@@ -1,19 +1,19 @@
 import { RentalPoint } from '../entities/RentalPoint';
 
 export interface TransferRoute {
-  fromLocationId: string;
-  toLocationId: string;
+  readonly fromLocationId: string;
+  readonly toLocationId: string;
   standardTransitDays: number;
-  distanceKm?: number;
-  availableTransports?: string[];
-  costEstimate?: number;
+  readonly distanceKm?: number;
+  readonly availableTransports?: string[];
+  readonly costEstimate?: number;
 }
 
 export interface TransferTimeLine {
-  scheduledDeparture: Date;
-  estimatedArrival: Date;
-  transitDays: number;
-  bufferDays: number;
+  readonly scheduledDeparture: Date;
+  readonly estimatedArrival: Date;
+  readonly transitDays: number;
+  readonly bufferDays: number;
 }
 
 export class LogisticsService {

@@ -11,9 +11,9 @@ import {
 } from 'src/infrastructure/types/web-push-types';
 
 export interface WebPushConfig {
-  vapidPublicKey: string;
-  vapidPrivateKey?: string;
-  serviceWorkerPath?: string;
+  readonly vapidPublicKey: string;
+  readonly vapidPrivateKey?: string;
+  readonly serviceWorkerPath?: string;
 }
 
 type WebPushResult<T> = { success: true; data: T } | { success: false; error: string };

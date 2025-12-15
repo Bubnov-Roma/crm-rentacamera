@@ -3,17 +3,17 @@ import { ITransferRepository } from 'src/application/ports/repositories/ITransfe
 import { EquipmentTransfer, TransferData, TransferStatus } from 'src/domain/entities/Transfer';
 
 interface PrismaTransferData {
-  id: string;
-  equipmentInstanceId: string;
-  fromLocationId: string;
-  toLocationId: string;
-  bookingItemId: string | null;
-  status: TransferStatus;
-  scheduledDate: Date;
-  estimatedArrival: Date;
-  actualArrival: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
+  readonly id: string;
+  readonly equipmentInstanceId: string;
+  readonly fromLocationId: string;
+  readonly toLocationId: string;
+  readonly bookingItemId: string | null;
+  readonly status: TransferStatus;
+  readonly scheduledDate: Date;
+  readonly estimatedArrival: Date;
+  readonly actualArrival: Date | null;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
 }
 
 // Type Guards

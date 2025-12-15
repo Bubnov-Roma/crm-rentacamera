@@ -1,25 +1,25 @@
 import { EquipmentCondition, EquipmentInstanceStatus } from './Equipment';
 
-export interface EquipmentInstanceData {
-  id: string;
-  serialNumber: string;
-  internalId: string;
-  equipmentId: string;
-  currentLocationId: string;
+export interface EquipmentInstanceData<T = unknown> {
+  readonly id: string;
+  readonly serialNumber: string;
+  readonly internalId: string;
+  readonly equipmentId: string;
+  readonly currentLocationId: string;
   status: EquipmentInstanceStatus;
   condition: EquipmentCondition;
-  inventoryNumber?: string;
-  barcode?: string;
-  purchaseDate?: Date;
-  purchasePrice?: number;
+  readonly inventoryNumber?: string;
+  readonly barcode?: string;
+  readonly purchaseDate?: Date;
+  readonly purchasePrice?: number;
   lastMaintenanceDate?: Date;
   nextMaintenanceDate: Date;
-  configurationDetails?: Record<string, unknown>;
-  defectsDescription?: string;
+  readonly configurationDetails?: T;
+  readonly defectsDescription?: string;
   notes?: string;
-  isSubRental: boolean;
-  subRentalLocation?: string;
-  createdAt: Date;
+  readonly isSubRental: boolean;
+  readonly subRentalLocation?: string;
+  readonly createdAt: Date;
   updatedAt: Date;
 }
 
@@ -117,7 +117,7 @@ export class EquipmentInstance {
   get nextMaintenanceDate(): Date {
     return this.data.nextMaintenanceDate;
   }
-  get configurationDetails(): Record<string, unknown> | undefined {
+  get configurationDetails(): unknown {
     return this.data.configurationDetails;
   }
   get defectsDescription(): string | undefined {

@@ -4,29 +4,29 @@ import { RentalPoint } from '../entities/RentalPoint';
 import { ITransferRepository } from 'src/application/ports/repositories/ITransferRepository';
 import { EquipmentTransfer } from '../entities/Transfer';
 export interface AvailabilityCheckResult {
-  isAvailable: boolean;
-  availableFrom?: Date;
-  availableUntil?: Date;
-  requiresTransfer?: boolean;
-  transferTimeline?: {
-    scheduledDeparture: Date;
-    estimatedArrival: Date;
-    transitDays: number;
+  readonly isAvailable: boolean;
+  readonly availableFrom?: Date;
+  readonly availableUntil?: Date;
+  readonly requiresTransfer?: boolean;
+  readonly transferTimeline?: {
+    readonly scheduledDeparture: Date;
+    readonly estimatedArrival: Date;
+    readonly transitDays: number;
   };
-  conflictingBookings?: Array<{
-    bookingId: string;
-    startDate: Date;
-    endDate: Date;
+  readonly conflictingBookings?: Array<{
+    readonly bookingId: string;
+    readonly startDate: Date;
+    readonly endDate: Date;
   }>;
-  conflictingTransfers?: EquipmentTransfer[];
+  readonly conflictingTransfers?: EquipmentTransfer[];
 }
 
 export interface EquipmentAvailabilityRequest {
-  equipmentInstanceId: string;
-  requestedLocationId: string;
-  startDate: Date;
-  endDate: Date;
-  quantity?: number;
+  readonly equipmentInstanceId: string;
+  readonly requestedLocationId: string;
+  readonly startDate: Date;
+  readonly endDate: Date;
+  readonly quantity?: number;
 }
 
 export class AvailabilityService {

@@ -1,15 +1,15 @@
-export interface NotificationOptions {
-  body?: string;
-  icon?: string;
-  image?: string;
-  badge?: string;
-  tag?: string;
-  renotify?: boolean;
-  silent?: boolean;
-  requireInteraction?: boolean;
-  data?: unknown;
-  actions?: ReadonlyArray<NotificationAction>;
-  vibrate?: number[];
+export interface NotificationOptions<T = unknown> {
+  readonly body?: string;
+  readonly icon?: string;
+  readonly image?: string;
+  readonly badge?: string;
+  readonly tag?: string;
+  readonly renotify?: boolean;
+  readonly silent?: boolean;
+  readonly requireInteraction?: boolean;
+  readonly data?: T;
+  readonly actions?: ReadonlyArray<NotificationAction>;
+  readonly vibrate?: number[];
 }
 
 export interface NotificationAction {
@@ -32,14 +32,14 @@ export interface PushSubscriptionJSON {
   };
 }
 
-export interface BrowserEnvironment {
+export interface BrowserEnvironment<T = unknown> {
   readonly navigator: {
     readonly serviceWorker?: ServiceWorkerContainer;
   };
   readonly window: {
     readonly atob: (encoded: string) => string;
     readonly fetch: typeof fetch;
-    readonly PushManager?: unknown;
+    readonly PushManager?: T;
   };
   readonly Notification?: {
     readonly permission: 'default' | 'granted' | 'denied';
@@ -53,7 +53,7 @@ export type EnvironmentCheckResult =
   | { type: 'NON_BROWSER' };
 
 export interface BrowserAPI {
-  navigator: Navigator;
-  window: Window & typeof globalThis;
-  serviceWorker?: ServiceWorkerContainer;
+  readonly navigator: Navigator;
+  readonly window: Window & typeof globalThis;
+  readonly serviceWorker?: ServiceWorkerContainer;
 }

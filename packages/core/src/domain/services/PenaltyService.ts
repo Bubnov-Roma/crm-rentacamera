@@ -2,9 +2,9 @@ import { Booking } from 'src/domain/entities/Booking';
 import { Money } from 'src/domain/value-objects/Money';
 
 export interface PenaltyCalculationResult {
-  penaltyAmount: Money;
-  penaltyReason: string;
-  isPenaltyApplied: boolean;
+  readonly penaltyAmount: Money;
+  readonly penaltyReason: string;
+  readonly isPenaltyApplied: boolean;
 }
 
 export class PenaltyService {
