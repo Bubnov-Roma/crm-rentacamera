@@ -1,6 +1,6 @@
 export interface MoneyData {
-  amount: number;
-  currency: string;
+  readonly amount: number;
+  readonly currency: string;
 }
 
 export class Money {

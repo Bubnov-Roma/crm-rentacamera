@@ -4,9 +4,9 @@ import {
 } from 'src/infrastructure/types/notification-service-types';
 
 export interface ServerWebPushConfig {
-  vapidPublicKey: string;
-  vapidPrivateKey: string;
-  email: string;
+  readonly vapidPublicKey: string;
+  readonly vapidPrivateKey: string;
+  readonly email: string;
 }
 
 export class ServerWebPushProvider implements NotificationProvider {

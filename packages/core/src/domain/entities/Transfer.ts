@@ -1,17 +1,17 @@
 export interface TransferData {
-  id: string;
-  equipmentInstanceId: string;
-  toLocationId: string;
-  fromLocationId: string;
-  scheduledDeparture: Date;
-  estimatedArrival: Date;
+  readonly id: string;
+  readonly equipmentInstanceId: string;
+  readonly toLocationId: string;
+  readonly fromLocationId: string;
+  readonly scheduledDeparture: Date;
+  readonly estimatedArrival: Date;
   actualDeparture?: Date;
   actualArrival?: Date;
   status: TransferStatus;
-  transferType: TransferType;
-  associatedBookingId?: string;
-  notes?: string;
-  createdAt: Date;
+  readonly transferType: TransferType;
+  readonly associatedBookingId?: string;
+  readonly notes?: string;
+  readonly createdAt: Date;
   updatedAt: Date;
 }
 

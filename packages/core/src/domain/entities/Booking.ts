@@ -9,22 +9,23 @@ import {
   BookingCreatedEvent,
 } from '../events/BookingEvents';
 
-export interface DomainEvent {
-  type: string;
-  payload: Record<string, unknown>;
-  timestamp: Date;
+export interface DomainEvent<T = unknown> {
+  readonly type: string;
+  readonly payload: T;
+  readonly timestamp: Date;
+  readonly aggregateId: string;
 }
 export interface BookingData {
-  id: string;
-  number: string;
-  userId: string;
-  pickupLocationId: string;
-  period: RentalPeriod;
-  totalAmount: Money;
-  depositAmount: Money;
-  status: DomainBookingStatus;
+  readonly id: string;
+  readonly number: string;
+  readonly userId: string;
+  readonly pickupLocationId: string;
+  readonly period: RentalPeriod;
+  readonly totalAmount: Money;
+  readonly depositAmount: Money;
+  readonly status: DomainBookingStatus;
   penaltyAmount?: Money;
-  equipmentIds: string[];
+  readonly equipmentIds: string[];
 }
 
 export class Booking {

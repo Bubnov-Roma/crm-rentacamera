@@ -11,13 +11,13 @@ export type EquipmentInstanceStatus =
 export type EquipmentCondition = 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED';
 
 export interface EquipmentSpecificationsData {
-  weight?: number;
-  dimensions?: string;
-  resolution?: string;
-  sensorSize?: string;
-  isoRange?: string;
-  shutterSpeed?: string;
-  customFields?: string;
+  readonly weight?: number;
+  readonly dimensions?: string;
+  readonly resolution?: string;
+  readonly sensorSize?: string;
+  readonly isoRange?: string;
+  readonly shutterSpeed?: string;
+  readonly customFields?: string;
 }
 
 export class EquipmentSpecifications {
@@ -60,29 +60,29 @@ export class EquipmentSpecifications {
 }
 
 export interface EquipmentData {
-  id: string;
-  sku: string;
+  readonly id: string;
+  readonly sku: string;
   name: string;
   description: string | null;
-  categoryId: string;
+  readonly categoryId: string;
   brand: string;
   model: string;
-  serialNumber: string;
+  readonly serialNumber: string;
   specifications: EquipmentSpecifications;
   baseHourlyRate: Money;
   baseDailyRate: MoneyData;
   baseMonthlyRate: MoneyData;
   depositAmount: MoneyData;
   replacementCost: MoneyData;
-  pricingMatrix: string;
-  tags: string[];
-  comments: string | null;
-  images: string[];
-  manuals: string[];
+  readonly pricingMatrix: string;
+  readonly tags: string[];
+  readonly comments: string | null;
+  readonly images: string[];
+  readonly manuals: string[];
   status: EquipmentStatus;
   isPublic: boolean;
   partnerId?: string;
-  createdAt: Date;
+  readonly createdAt: Date;
   updatedAt: Date;
 }
 

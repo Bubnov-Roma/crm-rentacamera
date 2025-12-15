@@ -4,41 +4,41 @@ import { Equipment, EquipmentSpecifications, EquipmentStatus } from 'src/domain/
 import { Money } from 'src/domain/value-objects/Money';
 
 export interface PrismaEquipment {
-  id: string;
-  sku: string;
-  name: string;
-  description: string | null;
-  categoryId: string;
-  brand: string;
-  model: string;
-  serialNumber: string;
-  specifications: string | number | boolean | object | null;
-  baseHourlyRate: number;
-  baseDailyRate: number;
-  baseMonthlyRate: number;
-  depositAmount: number;
-  replacementCost: number;
-  pricingMatrix: string | number | boolean | object | null;
-  tags: string[];
-  comments: string | null;
-  images: string[];
-  manuals: string[];
-  status: string;
-  isPublic: boolean;
-  partnerId: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  category: {
-    id: string;
-    name: string;
+  readonly id: string;
+  readonly sku: string;
+  readonly name: string;
+  readonly description: string | null;
+  readonly categoryId: string;
+  readonly brand: string;
+  readonly model: string;
+  readonly serialNumber: string;
+  readonly specifications: string | number | boolean | object | null;
+  readonly baseHourlyRate: number;
+  readonly baseDailyRate: number;
+  readonly baseMonthlyRate: number;
+  readonly depositAmount: number;
+  readonly replacementCost: number;
+  readonly pricingMatrix: string | number | boolean | object | null;
+  readonly tags: string[];
+  readonly comments: string | null;
+  readonly images: string[];
+  readonly manuals: string[];
+  readonly status: string;
+  readonly isPublic: boolean;
+  readonly partnerId: string | null;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+  readonly category: {
+    readonly id: string;
+    readonly name: string;
   };
-  partner: {
-    id: string;
-    userId: string;
+  readonly partner: {
+    readonly id: string;
+    readonly userId: string;
   } | null;
-  instances: Array<{
-    id: string;
-    status: string;
+  readonly instances: Array<{
+    readonly id: string;
+    readonly status: string;
   }>;
 }
 
