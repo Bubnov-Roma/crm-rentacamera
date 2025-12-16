@@ -1,6 +1,5 @@
-import { UserType } from 'src/infrastructure/types/user-types';
+import { UserRole, UserType } from 'src/infrastructure/types/user-types';
 
-type UserRole = 'ADMIN' | 'MANAGER' | 'CLIENT' | 'PARTNER';
 export class User {
   constructor(private profile: UserType) {}
 

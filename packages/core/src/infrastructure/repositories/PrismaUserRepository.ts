@@ -1,7 +1,7 @@
-import { PrismaClient, UserRole } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { IUserRepository } from 'src/application/ports/repositories/IUserRepository';
 import { User } from 'src/domain/entities/User';
-import { UserType } from 'src/infrastructure/types/user-types';
+import { UserRole, UserType } from 'src/infrastructure/types/user-types';
 
 export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaClient) {}
