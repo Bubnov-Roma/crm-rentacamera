@@ -1,0 +1,344 @@
+# ============================================
+# SCALARS
+# ============================================
+scalar DateTime
+scalar JSON
+scalar Money
+
+# ============================================
+# ENUMS
+# ============================================
+enum BookingStatus {
+  DRAFT
+  PENDING
+  CONFIRMED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum EquipmentStatus {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+}
+
+enum UserRole {
+  CLIENT
+  ADMIN
+  MANAGER
+  PARTNER
+}
+
+# ============================================
+# INPUT TYPES
+# ============================================
+input PaginationInput {
+  first: Int
+  after: String
+  last: Int
+  before: String
+}
+
+input DateRangeInput {
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+input EquipmentFiltersInput {
+  categoryId: ID
+  brand: String
+  priceRange: PriceRangeInput
+  availability: DateRangeInput
+  search: String
+  tags: [String!]
+}
+
+input PriceRangeInput {
+  min: Float!
+  max: Float!
+}
+
+input CreateBookingInput {
+  pickupLocationId: ID!
+  startDate: DateTime!
+  endDate: DateTime!
+  equipmentItems: [EquipmentItemInput!]!
+}
+
+input EquipmentItemInput {
+  equipmentInstanceId: ID!
+  quantity: Int!
+}
+
+# ============================================
+# TYPES
+# ============================================
+type Query {
+  # Equipment
+  equipment(id: ID!): Equipment
+  equipmentList(filters: EquipmentFiltersInput, pagination: PaginationInput): EquipmentConnection!
+
+  # Booking
+  booking(id: ID!): Booking
+  myBookings(status: BookingStatus, pagination: PaginationInput): BookingConnection!
+
+  # Availability
+  checkAvailability(equipmentId: ID!, period: DateRangeInput!, locationId: ID!): AvailabilityResult!
+
+  # User
+  me: User
+}
+
+type Mutation {
+  # Auth
+  register(email: String!, password: String!, firstName: String!, lastName: String!): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+  refreshToken: AuthPayload!
+
+  # Booking
+  createBooking(input: CreateBookingInput!): BookingPayload!
+  confirmBooking(id: ID!): BookingPayload!
+  cancelBooking(id: ID!, reason: String!): BookingPayload!
+
+  # Cart
+  addToCart(equipmentId: ID!, quantity: Int!): Cart!
+  removeFromCart(equipmentId: ID!): Cart!
+  clearCart: Cart!
+}
+
+type Subscription {
+  bookingStatusChanged(bookingId: ID!): BookingStatusUpdate!
+  equipmentAvailabilityChanged(equipmentId: ID!): AvailabilityUpdate!
+}
+
+# ============================================
+# EQUIPMENT TYPES
+# ============================================
+type Equipment {
+  id: ID!
+  sku: String!
+  name: String!
+  description: String
+  brand: String!
+  model: String!
+  serialNumber: String!
+
+  category: EquipmentCategory!
+  specifications: JSON!
+
+  pricing: PricingInfo!
+  images: [String!]!
+  tags: [String!]!
+
+  status: EquipmentStatus!
+  isPublic: Boolean!
+
+  # Computed fields
+  availability(period: DateRangeInput!, locationId: ID): AvailabilityStatus!
+  averageRating: Float
+  reviewCount: Int!
+  reviews(pagination: PaginationInput): ReviewConnection!
+}
+
+type EquipmentCategory {
+  id: ID!
+  name: String!
+  slug: String!
+  description: String
+  image: String
+  parentId: ID
+}
+
+type PricingInfo {
+  hourlyRate: Float!
+  dailyRate: Float!
+  monthlyRate: Float!
+  depositAmount: Float!
+  currency: String!
+}
+
+type AvailabilityStatus {
+  isAvailable: Boolean!
+  availableFrom: DateTime
+  availableUntil: DateTime
+  requiresTransfer: Boolean
+  transferTimeline: TransferTimeline
+}
+
+type TransferTimeline {
+  scheduledDeparture: DateTime!
+  estimatedArrival: DateTime!
+  transitDays: Int!
+}
+
+# ============================================
+# BOOKING TYPES
+# ============================================
+type Booking {
+  id: ID!
+  number: String!
+  status: BookingStatus!
+
+  user: User!
+  pickupLocation: RentalPoint!
+
+  period: DateRange!
+  items: [BookingItem!]!
+
+  totalAmount: Float!
+  depositAmount: Float!
+  penaltyAmount: Float
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type BookingItem {
+  id: ID!
+  equipment: Equipment!
+  quantity: Int!
+  unitPrice: Float!
+  totalPrice: Float!
+}
+
+type DateRange {
+  startDate: DateTime!
+  endDate: DateTime!
+  durationInHours: Int!
+  durationInDays: Int!
+}
+
+type RentalPoint {
+  id: ID!
+  name: String!
+  code: String!
+  address: String!
+  isActive: Boolean!
+}
+
+# ============================================
+# USER TYPES
+# ============================================
+type User {
+  id: ID!
+  email: String!
+  firstName: String!
+  lastName: String!
+  phone: String
+  role: UserRole!
+  avatar: String
+  discountRate: Float
+  isVerified: Boolean!
+
+  # Relations
+  bookings(pagination: PaginationInput): BookingConnection!
+}
+
+# ============================================
+# AUTH TYPES
+# ============================================
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+# ============================================
+# PAGINATION TYPES
+# ============================================
+type EquipmentConnection {
+  edges: [EquipmentEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type EquipmentEdge {
+  node: Equipment!
+  cursor: String!
+}
+
+type BookingConnection {
+  edges: [BookingEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type BookingEdge {
+  node: Booking!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# ============================================
+# PAYLOAD TYPES
+# ============================================
+type BookingPayload {
+  booking: Booking
+  errors: [Error!]
+  success: Boolean!
+}
+
+type AvailabilityResult {
+  isAvailable: Boolean!
+  availableFrom: DateTime
+  message: String
+}
+
+type BookingStatusUpdate {
+  bookingId: ID!
+  status: BookingStatus!
+  timestamp: DateTime!
+}
+
+type AvailabilityUpdate {
+  equipmentId: ID!
+  isAvailable: Boolean!
+  timestamp: DateTime!
+}
+
+type Error {
+  field: String
+  message: String!
+}
+
+# ============================================
+# CART (in-memory, no persistence)
+# ============================================
+type Cart {
+  items: [CartItem!]!
+  totalAmount: Float!
+  itemCount: Int!
+}
+
+type CartItem {
+  equipment: Equipment!
+  quantity: Int!
+}
+
+# ============================================
+# REVIEW
+# ============================================
+type Review {
+  id: ID!
+  rating: Int!
+  comment: String
+  user: User!
+  createdAt: DateTime!
+}
+
+type ReviewConnection {
+  edges: [ReviewEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ReviewEdge {
+  node: Review!
+  cursor: String!
+}
