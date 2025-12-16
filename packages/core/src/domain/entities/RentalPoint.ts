@@ -4,7 +4,7 @@ export interface RentalPointData {
   readonly code: string;
   address: string;
   isActive: boolean;
-  readonly createdAt: Date;
+  readonly createdAt?: Date;
   updatedAt: Date;
 }
 

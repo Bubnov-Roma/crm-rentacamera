@@ -20,13 +20,13 @@ export class PrismaRentalPointRepository implements IRentalPointRepository {
     return this.toDomainEntity(rentalPointData);
   }
   async findAllActive(): Promise<RentalPoint[]> {
-    const rentalPointsData = await this.prisma.rentalPoint.findMany({
+    const rentalPointsData: RentalPointData[] = await this.prisma.rentalPoint.findMany({
       where: { isActive: true },
     });
     return rentalPointsData.map((data) => this.toDomainEntity(data));
   }
   async save(rentalPoint: RentalPoint): Promise<void> {
-    const data = {
+    const data: RentalPointData = {
       id: rentalPoint.id,
       name: rentalPoint.name,
       code: rentalPoint.code,
