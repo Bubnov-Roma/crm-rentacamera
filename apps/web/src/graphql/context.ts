@@ -14,6 +14,7 @@ export interface GraphQLContext {
 
   // Use Cases
   createBookingUseCase: ReturnType<typeof Container.getCreateBookingUseCase>;
+  confirmBookingUseCase: ReturnType<typeof Container.getConfirmBookingUseCase>;
   cancelBookingUseCase: ReturnType<typeof Container.getCancelBookingUseCase>;
 
   // Auth
@@ -57,6 +58,7 @@ export async function createContext({ request }: { request: Request }): Promise<
 
     // Use Cases
     createBookingUseCase: Container.getCreateBookingUseCase(),
+    confirmBookingUseCase: Container.getConfirmBookingUseCase(),
     cancelBookingUseCase: Container.getCancelBookingUseCase(),
 
     // Auth

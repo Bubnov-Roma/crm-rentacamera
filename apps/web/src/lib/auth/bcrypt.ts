@@ -5,13 +5,18 @@ const SALT_ROUNDS = 10;
  * Hash a password using bcrypt.
  */
 export async function hashPassword(password: string): Promise<string> {
-  const salt = await bcrypt.genSalt(SALT_ROUNDS);
-  return bcrypt.hash(password, salt);
+  return bcrypt.hash(password, SALT_ROUNDS);
 }
 /**
- * Verify a password against a bcrypt hash.
+ * Verify password against hash
  */
-export async function verifyPassword(
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(password, hash);
+}
+/**
+ * Validate password strength
+ */
+export async function validatePasswordStrength(
   password: string,
 ): Promise<{ isValid: boolean; errors: string[] }> {
   const errors: string[] = [];

@@ -111,7 +111,6 @@ export class Container {
     this.instances.bookingRepository = new PrismaBookingRepository(prisma);
     this.instances.userRepository = new PrismaUserRepository(prisma);
     this.instances.equipmentRepository = new PrismaEquipmentRepository(prisma);
-    this.instances.equipmentRepository = new PrismaEquipmentRepository(prisma);
     this.instances.transferRepository = new PrismaTransferRepository(prisma);
     this.instances.rentalPointRepository = new PrismaRentalPointRepository(prisma);
     console.log('✅ Repositories initialize');
@@ -130,7 +129,7 @@ export class Container {
     // INFRASTRUCTURE SERVICES
     this.instances.notificationService = new NotificationService(notificationConfig);
     this.instances.eventPublisher = new SimpleEventPublisher();
-    console.log('✅ Infrastructure services have been initialized');
+    console.log('✅ Infrastructure Services initialized');
 
     // EVENT HANDLERS
     this.instances.bookingEventHandler = new BookingEventHandler(
@@ -147,11 +146,6 @@ export class Container {
       this.instances.logisticService,
     );
     console.log('✅ AvailabilityService initialized');
-
-    // this.instances.transferRepository = new PrismaTransferRepository(prisma);
-    // this.instances.rentalPointRepository = new PrismaRentalPointRepository(prisma);
-
-    // console.log('✅ Repositories initialize');
 
     // Use Cases
     this.instances.createBookingUseCase = new CreateBookingUseCase(
@@ -226,6 +220,10 @@ export class Container {
 
   static getPricingService(): PricingService {
     return this.get('pricingService');
+  }
+
+  static getAvailabilityService(): AvailabilityService {
+    return this.get('availabilityService');
   }
 
   static getNotificationService(): INotificationService {
