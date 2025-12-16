@@ -1,48 +1,25 @@
-## 🛠️ TECHNOLOGY STACK
-
-- Frontend: Next.js 15.5.9 (App Router), React 19, TypeScript
-- Backend: Node.js + Fastify (for microservice)
-- Database: Supabase (PostgreSQL + real time + auth)
-- ORM: Prisma + Zod for validation
-- Caching: TanStack Query v5
-- UI: Ant Design + Tailwind CSS
-- PWA: next-pwa
-- Offline: IndexedDB + OPFS + CRDT (Y.js)
-- WebSocket: Socket.io
-- WebRTC: to support video consultations
-
-## 🏗 ARCHITECTURAL PRINCIPLES
-
-- DI (use Awilix for Dependency Injection)
-- DDD (Domain-Driven Design)
-- CRDT (IndexedDB + OPFS + CRDT (Y.js) for offline synchronization)
-- Microservices
-- PWA
-- Metaprogramming and DSL
-
-
 # 📚 CRM RENTACAMERA - COMPLETE PROJECT DOCUMENTATION
 
 > **Version**: 1.0.0  
-> **Last Updated**: 2025-12-13  
+> **Last Updated**: 2025-12-16  
 > **Status**: Domain Layer Complete, Client UI Development Phase
 
 ---
 
 ## 📑 TABLE OF CONTENTS
 
-1. [Project Overview](#project-overview)
-2. [Architecture](#architecture)
-3. [Domain Layer Deep Dive](#domain-layer)
-4. [Application Layer Deep Dive](#application-layer)
-5. [Infrastructure Layer Deep Dive](#infrastructure-layer)
-6. [Data Flow & Interactions](#data-flow)
-7. [Technology Stack](#tech-stack)
-8. [Current Implementation Status](#implementation-status)
+- [Project Overview](#PROJECT-OVERVIEW)
+- [Architecture](#ARCHITECTURE)
+- [Domain Layer](#DOMAIN-LAYER)
+- [Application Layer](#APPLICATION-LAYER)
+- [Infrastructure Layer](#INFRASTRUCTURE-LAYER)
+- [Data Flow and Interactions](#DATA-FLOW-AMD-INTERACTIONS)
+- [Technology Stack](#TECH-STACK)
+- [Current Implementation Status](#IMPLEMENTATION-STATUS)
 
 ---
 
-## 🎯 PROJECT OVERVIEW
+## PROJECT OVERVIEW
 
 ### Business Domain
 **CRM система для аренды фото/видео оборудования** с межгородской логистикой и партнёрской сетью.
@@ -72,7 +49,7 @@
 
 ---
 
-## 🏗️ ARCHITECTURE
+## ARCHITECTURE
 
 ### High-Level Architecture
 
@@ -170,7 +147,7 @@ graph LR
 
 ---
 
-## 💼 DOMAIN LAYER DEEP DIVE
+## DOMAIN LAYER
 
 ### Bounded Contexts
 
@@ -669,7 +646,7 @@ class Partner {
 
 ---
 
-## 📋 APPLICATION LAYER DEEP DIVE
+## APPLICATION LAYER
 
 ### CQRS Pattern Implementation
 
@@ -932,7 +909,7 @@ export class BookingEventHandler {
 
 ---
 
-## 🔧 INFRASTRUCTURE LAYER DEEP DIVE
+## INFRASTRUCTURE LAYER
 
 ### Repository Pattern Implementation
 
@@ -1081,7 +1058,7 @@ export class NotificationService implements INotificationService {
 
 ---
 
-## 🔄 DATA FLOW & INTERACTIONS
+## DATA FLOW AMD INTERACTIONS
 
 ### Complete Booking Flow
 
@@ -1221,7 +1198,7 @@ sequenceDiagram
 
 ---
 
-## 🛠️ TECH STACK
+## TECH STACK
 
 ### Frontend Stack
 ```yaml
@@ -1233,12 +1210,12 @@ Styling:
   - Ant Design 5.12.0
 State Management:
   - TanStack Query 5.8.4 (Server State)
-  - Zustand (recommended for Client State)
+  - Zustand (Client State)
 Forms: React Hook Form
 Animations: Framer Motion 10.16.16
 PWA: next-pwa 5.6.0
 Testing:
-  - Vitest (Unit/Integration)
+  - Jest (Unit/Integration)
   - Playwright (E2E)
   - Testing Library (Components)
 ```
@@ -1251,7 +1228,9 @@ Microservices: Fastify (planned)
 Database: PostgreSQL (Supabase)
 ORM: Prisma 6.17.1
 Validation: Zod 3.22.4
-Authentication: NextAuth.js 4.24.5
+Authentication: 
+  - NextAuth.js 4.24.5 
+  - JWT
 Real-time: Socket.io-client 4.7.4
 WebRTC: (for video consultations)
 ```
@@ -1270,18 +1249,71 @@ Monitoring: (to be added)
 
 ### Development Tools
 ```yaml
-Linting: ESLint 9.37.0
-Formatting: Prettier 3.1.1
+Linting: ESLint 9.37.0 + Biom
+Formatting: Prettier 3.1.1 or Biom
 Git Hooks: Husky 9.1.7 + lint-staged
 Commit Convention: Commitlint (Conventional Commits)
 Type Checking: TypeScript strict mode
 ```
 
+### GraphQL
+```yaml
+Server:
+  Framework: GraphQL Yoga 5.x (best fot Next.js)
+  Schema: Schema-first (Code Generation)
+  Validation: Zod + GraphQL Scalars
+  DataLoader: (N+1 problem)
+  
+Client:
+  Library: urql 4.x (minimum boilerplate)
+  Cache: Normalized cache (document cache)
+  DevTools: GraphiQL
+  
+Code Generation:
+  Tool: GraphQL Code Generator
+  Output: 
+    - TypeScript types
+    - React hooks
+    - Operations types
+```
+
+### Authentication (JWT + NextAuth)
+```yaml
+NextAuth Configuration:
+  Providers:
+    - Credentials (Email/Password + JWT)
+    - Google OAuth (option)
+    - Telegram (for partners)
+  
+  JWT Strategy:
+    Access Token: 
+      - Lifetime: 15 minutes
+      - Storage: Memory (not localStorage!)
+      - Format: Signed JWT
+    
+    Refresh Token:
+      - Lifetime: 7 days
+      - Storage: HttpOnly Cookie (secure, sameSite)
+      - Rotation: At every refresh
+    
+  Session:
+    - Strategy: JWT (stateless)
+    - Cookie: HttpOnly, Secure, SameSite=Lax
+    - Encryption: JWE (Json Web Encryption)
+
+Security:
+  - CSRF protection (NextAuth built-in)
+  - Rate limiting (via IP)
+  - Token rotation
+  - Refresh token reuse detection
+  - XSS protection (no localStorage for tokens)
+```
+
 ---
 
-## 📊 IMPLEMENTATION STATUS
+## IMPLEMENTATION STATUS
 
-### ✅ Completed (Domain Layer)
+### ✅ Completed
 
 ```
 Domain Layer (100%)
