@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Equipment as PrismaEquipmentModel } from '@prisma/client';
 import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
 import {
   Equipment,
@@ -46,6 +46,21 @@ export interface PrismaEquipment {
     readonly status: string;
   }>;
 }
+
+export type PrismaEquipmentWithRelations = PrismaEquipmentModel & {
+  category: {
+    id: string;
+    name: string;
+  };
+  partner: {
+    id: string;
+    userId: string;
+  } | null;
+  instances: Array<{
+    id: string;
+    status: string;
+  }>;
+};
 
 export class PrismaEquipmentRepository implements IEquipmentRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -104,7 +119,7 @@ export class PrismaEquipmentRepository implements IEquipmentRepository {
         },
       },
     });
-    return prismaData.map((data) => this.toDomainEntity(data));
+    return prismaData.map((data: PrismaEquipmentWithRelations) => this.toDomainEntity(data));
   }
   async save(equipment: Equipment): Promise<void> {
     const data: EquipmentData = equipment.toPrisma();
@@ -188,7 +203,7 @@ export class PrismaEquipmentRepository implements IEquipmentRepository {
         },
       },
     });
-    return prismaData.map((data) => this.toDomainEntity(data));
+    return prismaData.map((data: PrismaEquipmentWithRelations) => this.toDomainEntity(data));
   }
   async updateStatus(equipmentId: string, status: EquipmentStatus): Promise<void> {
     await this.prisma.equipment.update({
@@ -211,7 +226,7 @@ export class PrismaEquipmentRepository implements IEquipmentRepository {
         instances: true,
       },
     });
-    return prismaData.map((data) => this.toDomainEntity(data));
+    return prismaData.map((data: PrismaEquipmentWithRelations) => this.toDomainEntity(data));
   }
 
   private toDomainEntity(prismaData: PrismaEquipment): Equipment {
