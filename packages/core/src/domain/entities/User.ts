@@ -1,6 +1,6 @@
-import { UserRole } from '@prisma/client';
 import { UserType } from 'src/infrastructure/types/user-types';
 
+type UserRole = 'ADMIN' | 'MANAGER' | 'CLIENT' | 'PARTNER';
 export class User {
   constructor(private profile: UserType) {}
 
