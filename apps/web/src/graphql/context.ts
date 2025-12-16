@@ -1,5 +1,5 @@
 import { Container } from '@rentacamera/core';
-// import { verifyAccessToken } from '@/lib/auth/jwt';
+import { verifyAccessToken } from '@/lib/auth/jwt';
 import { createDataLoaders } from './dataloaders';
 
 export interface GraphQLContext {
@@ -10,7 +10,7 @@ export interface GraphQLContext {
 
   // Services
   pricingService: ReturnType<typeof Container.getPricingService>;
-  // availabilityService: ReturnType<typeof Container.getAvailabilityService>;
+  availabilityService: ReturnType<typeof Container.getAvailabilityService>;
 
   // Use Cases
   createBookingUseCase: ReturnType<typeof Container.getCreateBookingUseCase>;
@@ -34,15 +34,15 @@ export async function createContext({ request }: { request: Request }): Promise<
   let userRole: string | undefined;
 
   if (authHeader?.startsWith('Bearer ')) {
-    const _token = authHeader.substring(7);
-    // try {
-    //   const payload = await verifyAccessToken(token);
-    //   userId = payload.userId;
-    //   userRole = payload.role;
-    // } catch (error) {
-    //   // Invalid token, continue as unauthenticated
-    //   console.warn('Invalid token:', error);
-    // }
+    const token = authHeader.substring(7);
+    try {
+      const payload = await verifyAccessToken(token);
+      userId = payload.userId;
+      userRole = payload.role;
+    } catch (error) {
+      // Invalid token, continue as unauthenticated
+      console.warn('Invalid token:', error);
+    }
   }
 
   return {
@@ -53,7 +53,7 @@ export async function createContext({ request }: { request: Request }): Promise<
 
     // Services
     pricingService: Container.getPricingService(),
-    // availabilityService: Container.getAvailabilityService(),
+    availabilityService: Container.getAvailabilityService(),
 
     // Use Cases
     createBookingUseCase: Container.getCreateBookingUseCase(),
