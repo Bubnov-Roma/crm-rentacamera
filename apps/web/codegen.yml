@@ -1,0 +1,25 @@
+overwrite: true
+schema: './src/graphql/schema/**/*.graphql'
+documents: './src/**/*.graphql'
+generates:
+  ./src/types/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-urql
+    config:
+      skipTypename: false
+      withHooks: true
+      withComponent: false
+      withHOC: false
+      scalars:
+        DateTime: string
+        JSON: any
+        Money: number
+      enumsAsTypes: true
+      strictScalars: true
+      maybeValue: T | null | undefined
+      namingConvention:
+        typeNames: pascal-case#pascalCase
+        enumValues: upper-case#upperCase
+        transformUnderscore: true
