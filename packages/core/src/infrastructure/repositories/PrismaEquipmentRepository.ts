@@ -1,6 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
-import { Equipment, EquipmentSpecifications, EquipmentStatus } from 'src/domain/entities/Equipment';
+import {
+  Equipment,
+  EquipmentData,
+  EquipmentSpecifications,
+  EquipmentStatus,
+} from 'src/domain/entities/Equipment';
 import { Money } from 'src/domain/value-objects/Money';
 
 export interface PrismaEquipment {
@@ -102,7 +107,7 @@ export class PrismaEquipmentRepository implements IEquipmentRepository {
     return prismaData.map((data) => this.toDomainEntity(data));
   }
   async save(equipment: Equipment): Promise<void> {
-    const data = equipment.toPrisma();
+    const data: EquipmentData = equipment.toPrisma();
 
     const specificationsJson = data.specifications instanceof EquipmentSpecifications;
 
