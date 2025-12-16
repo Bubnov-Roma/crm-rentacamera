@@ -14,12 +14,18 @@
     "security:fix": "pnpm audit fix"
   },
   "dependencies": {
+    "@graphql-tools/load-files": "^7.0.1",
+    "@graphql-tools/merge": "^9.1.6",
     "@rentacamera/core": "workspace:*",
     "@rentacamera/database": "workspace:*",
     "@rentacamera/ui": "workspace:*",
     "@tanstack/react-query": "^5.8.4",
     "@tanstack/react-query-devtools": "^5.8.4",
+    "bcryptjs": "^3.0.3",
+    "dataloader": "^2.2.3",
     "framer-motion": "^10.16.16",
+    "graphql-tools": "^9.0.25",
+    "graphql-yoga": "^5.17.1",
     "next": "15.5.9",
     "next-auth": "^4.24.13",
     "next-pwa": "^5.6.0",
