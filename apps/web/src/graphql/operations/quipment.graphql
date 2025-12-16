@@ -1,0 +1,64 @@
+query GetEquipment($id: ID!) {
+  equipment(id: $id) {
+    id
+    sku
+    name
+    description
+    brand
+    model
+    pricing {
+      hourlyRate
+      dailyRate
+      monthlyRate
+      depositAmount
+      currency
+    }
+    images
+    tags
+    status
+    category {
+      id
+      name
+      slug
+    }
+  }
+}
+
+query GetEquipmentList($filters: EquipmentFiltersInput, $pagination: PaginationInput) {
+  equipmentList(filters: $filters, pagination: $pagination) {
+    edges {
+      node {
+        id
+        sku
+        name
+        description
+        brand
+        model
+        pricing {
+          dailyRate
+          depositAmount
+          currency
+        }
+        images
+        tags
+        status
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query CheckAvailability($equipmentId: ID!, $period: DateRangeInput!, $locationId: ID!) {
+  checkAvailability(equipmentId: $equipmentId, period: $period, locationId: $locationId) {
+    isAvailable
+    availableFrom
+    message
+  }
+}
