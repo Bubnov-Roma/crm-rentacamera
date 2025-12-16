@@ -113,6 +113,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.8.4
         version: 5.90.2(@tanstack/react-query@5.90.2(react@18.3.1))(react@18.3.1)
+      '@urql/exchange-auth':
+        specifier: ^3.0.0
+        version: 3.0.0(@urql/core@6.0.1(graphql@16.12.0))
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -127,7 +130,10 @@ importers:
         version: 16.12.0
       graphql-tools:
         specifier: ^9.0.25
-        version: 9.0.25(graphql@16.12.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        version: 9.0.25(graphql-ws@6.0.6(graphql@16.12.0)(ws@8.17.1))(graphql@16.12.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+      graphql-ws:
+        specifier: ^6.0.6
+        version: 6.0.6(graphql@16.12.0)(ws@8.17.1)
       graphql-yoga:
         specifier: ^5.17.1
         version: 5.17.1(graphql@16.12.0)
@@ -155,6 +161,9 @@ importers:
       socket.io-client:
         specifier: ^4.7.4
         version: 4.8.1
+      urql:
+        specifier: ^5.0.1
+        version: 5.0.1(@urql/core@6.0.1(graphql@16.12.0))(react@18.3.1)
     devDependencies:
       '@playwright/test':
         specifier: ^1.57.0
@@ -281,6 +290,17 @@ importers:
         version: 3.9.1(@types/node@20.19.19)(rollup@4.52.4)(typescript@5.9.3)(vite@7.2.7(@types/node@20.19.19)(jiti@1.21.7)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
 
 packages:
+  '@0no-co/graphql.web@1.2.0':
+    resolution:
+      {
+        integrity: sha512-/1iHy9TTr63gE1YcR5idjx8UREz1s0kFhydf3bBLCXyqjhkIc6igAzTOx3zPifCwFR87tsh/4Pa9cNts6d2otw==,
+      }
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    peerDependenciesMeta:
+      graphql:
+        optional: true
+
   '@alloc/quick-lru@5.2.0':
     resolution:
       {
@@ -3368,6 +3388,20 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@urql/core@6.0.1':
+    resolution:
+      {
+        integrity: sha512-FZDiQk6jxbj5hixf2rEPv0jI+IZz0EqqGW8mJBEug68/zHTtT+f34guZDmyjJZyiWbj0vL165LoMr/TkeDHaug==,
+      }
+
+  '@urql/exchange-auth@3.0.0':
+    resolution:
+      {
+        integrity: sha512-tj09xiOR2f1J2h8TE9uZWjRZipCdmDoTewEytOacDQ+0Teo+yIZxm3ppHxolQtiA51OHrGYiNTkMte8HtfvaBw==,
+      }
+    peerDependencies:
+      '@urql/core': ^6.0.0
+
   '@vitejs/plugin-react@4.7.0':
     resolution:
       {
@@ -5574,6 +5608,28 @@ packages:
     engines: { node: '>=16.0.0' }
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+
+  graphql-ws@6.0.6:
+    resolution:
+      {
+        integrity: sha512-zgfER9s+ftkGKUZgc0xbx8T7/HMO4AV5/YuYiFc+AtgcO5T0v8AxYYNQ+ltzuzDZgNkYJaFspm5MMYLjQzrkmw==,
+      }
+    engines: { node: '>=20' }
+    peerDependencies:
+      '@fastify/websocket': ^10 || ^11
+      crossws: ~0.3
+      graphql: ^15.10.1 || ^16
+      uWebSockets.js: ^20
+      ws: ^8
+    peerDependenciesMeta:
+      '@fastify/websocket':
+        optional: true
+      crossws:
+        optional: true
+      uWebSockets.js:
+        optional: true
+      ws:
+        optional: true
 
   graphql-yoga@5.17.1:
     resolution:
@@ -9099,6 +9155,15 @@ packages:
         integrity: sha512-IGjKp/o0NL3Bso1PymYURCJxMPNAf/ILOpendP9f5B6e1rTJgdgiOvgfoT8VxCAdY+Wisb9uhGaJJf3yZ2V9nw==,
       }
 
+  urql@5.0.1:
+    resolution:
+      {
+        integrity: sha512-r58gYlWvCTC19QvkTaARaCLV9/bp870byH/qbLaw3S7f8i/bC6x2Szub8RVXptiMxWmqq5dyVBjUL9G+xPEuqg==,
+      }
+    peerDependencies:
+      '@urql/core': ^6.0.0
+      react: '>= 16.8.0'
+
   util-deprecate@1.0.2:
     resolution:
       {
@@ -9291,6 +9356,12 @@ packages:
       }
     engines: { node: '>= 8' }
     hasBin: true
+
+  wonka@6.3.5:
+    resolution:
+      {
+        integrity: sha512-SSil+ecw6B4/Dm7Pf2sAshKQ5hWFvfyGlfPbEd6A14dOH6VDjrmbY86u6nZvy9omGwwIPFR8V41+of1EezgoUw==,
+      }
 
   word-wrap@1.2.5:
     resolution:
@@ -9549,6 +9620,10 @@ packages:
       }
 
 snapshots:
+  '@0no-co/graphql.web@1.2.0(graphql@16.12.0)':
+    optionalDependencies:
+      graphql: 16.12.0
+
   '@alloc/quick-lru@5.2.0': {}
 
   '@ant-design/colors@7.2.1':
@@ -9607,7 +9682,7 @@ snapshots:
       jsonpointer: 5.0.1
       leven: 3.1.0
 
-  '@apollo/client@4.0.10(graphql@16.12.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@apollo/client@4.0.10(graphql-ws@6.0.6(graphql@16.12.0)(ws@8.17.1))(graphql@16.12.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.12.0)
       '@wry/caches': 1.0.1
@@ -9619,6 +9694,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
     optionalDependencies:
+      graphql-ws: 6.0.6(graphql@16.12.0)(ws@8.17.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
     optional: true
@@ -11681,6 +11757,18 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
+  '@urql/core@6.0.1(graphql@16.12.0)':
+    dependencies:
+      '@0no-co/graphql.web': 1.2.0(graphql@16.12.0)
+      wonka: 6.3.5
+    transitivePeerDependencies:
+      - graphql
+
+  '@urql/exchange-auth@3.0.0(@urql/core@6.0.1(graphql@16.12.0))':
+    dependencies:
+      '@urql/core': 6.0.1(graphql@16.12.0)
+      wonka: 6.3.5
+
   '@vitejs/plugin-react@4.7.0(vite@7.2.7(@types/node@20.19.19)(jiti@1.21.7)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))':
     dependencies:
       '@babel/core': 7.28.4
@@ -13260,19 +13348,25 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  graphql-tools@9.0.25(graphql@16.12.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2):
+  graphql-tools@9.0.25(graphql-ws@6.0.6(graphql@16.12.0)(ws@8.17.1))(graphql@16.12.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2):
     dependencies:
       '@graphql-tools/schema': 10.0.30(graphql@16.12.0)
       graphql: 16.12.0
       tslib: 2.8.1
     optionalDependencies:
-      '@apollo/client': 4.0.10(graphql@16.12.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+      '@apollo/client': 4.0.10(graphql-ws@6.0.6(graphql@16.12.0)(ws@8.17.1))(graphql@16.12.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
     transitivePeerDependencies:
       - graphql-ws
       - react
       - react-dom
       - rxjs
       - subscriptions-transport-ws
+
+  graphql-ws@6.0.6(graphql@16.12.0)(ws@8.17.1):
+    dependencies:
+      graphql: 16.12.0
+    optionalDependencies:
+      ws: 8.17.1
 
   graphql-yoga@5.17.1(graphql@16.12.0):
     dependencies:
@@ -15684,6 +15778,12 @@ snapshots:
 
   urlpattern-polyfill@10.1.0: {}
 
+  urql@5.0.1(@urql/core@6.0.1(graphql@16.12.0))(react@18.3.1):
+    dependencies:
+      '@urql/core': 6.0.1(graphql@16.12.0)
+      react: 18.3.1
+      wonka: 6.3.5
+
   util-deprecate@1.0.2: {}
 
   uuid@8.3.2: {}
@@ -15851,6 +15951,8 @@ snapshots:
   which@2.0.2:
     dependencies:
       isexe: 2.0.0
+
+  wonka@6.3.5: {}
 
   word-wrap@1.2.5: {}
 

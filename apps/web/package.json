@@ -21,11 +21,13 @@
     "@rentacamera/ui": "workspace:*",
     "@tanstack/react-query": "^5.8.4",
     "@tanstack/react-query-devtools": "^5.8.4",
+    "@urql/exchange-auth": "^3.0.0",
     "bcryptjs": "^3.0.3",
     "dataloader": "^2.2.3",
     "framer-motion": "^10.16.16",
     "graphql": "^16.12.0",
     "graphql-tools": "^9.0.25",
+    "graphql-ws": "^6.0.6",
     "graphql-yoga": "^5.17.1",
     "jose": "^6.1.3",
     "next": "15.5.9",
@@ -34,7 +36,8 @@
     "nextjs-toploader": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "socket.io-client": "^4.7.4"
+    "socket.io-client": "^4.7.4",
+    "urql": "^5.0.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
