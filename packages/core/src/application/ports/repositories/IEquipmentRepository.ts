@@ -1,4 +1,4 @@
-import { Equipment, EquipmentStatus } from 'src/domain/entities/Equipment';
+import { Equipment, EquipmentStatus } from '../../../domain/entities/Equipment';
 
 export interface IEquipmentRepository {
   isAvailable(equipmentInstanceId: string, startDate: Date, endDate: Date): Promise<boolean>;

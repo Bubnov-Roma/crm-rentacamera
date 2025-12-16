@@ -1,17 +1,17 @@
-import { Booking } from 'src/domain/entities/Booking';
-import { PricingService } from 'src/domain/services/PricingService';
-import { CreateBookingCommand } from 'src/application/commands/booking/CreateBookingCommand';
-import { IBookingRepository } from 'src/application/ports/repositories/IBookingRepository';
-import { IUserRepository } from 'src/application/ports/repositories/IUserRepository';
-import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
-import { RentalPeriod } from 'src/domain/value-objects/RentalPeriod';
-import { Money } from 'src/domain/value-objects/Money';
-import { INotificationService } from 'src/application/ports/services/INotificationService';
-import { IEventPublisher } from 'src/application/ports/events/IEventPublisher';
-import { UserCanMakeBookingSpecification } from 'src/domain/specifications/UserSpecifications';
-import { EquipmentIsAvailableSpecification } from 'src/domain/specifications/EquipmentSpecifications';
-import { BookingCanBeCreatedSpecification } from 'src/domain/specifications/BookingSpecifications';
-import { Equipment } from 'src/domain/entities/Equipment';
+import { Booking } from '../../../domain/entities/Booking';
+import { PricingService } from '../../../domain/services/PricingService';
+import { CreateBookingCommand } from '../../../application/commands/booking/CreateBookingCommand';
+import { IBookingRepository } from '../../../application/ports/repositories/IBookingRepository';
+import { IUserRepository } from '../../../application/ports/repositories/IUserRepository';
+import { IEquipmentRepository } from '../../../application/ports/repositories/IEquipmentRepository';
+import { RentalPeriod } from '../../../domain/value-objects/RentalPeriod';
+import { Money } from '../../../domain/value-objects/Money';
+import { INotificationService } from '../../../application/ports/services/INotificationService';
+import { IEventPublisher } from '../../../application/ports/events/IEventPublisher';
+import { UserCanMakeBookingSpecification } from '../../../domain/specifications/UserSpecifications';
+import { EquipmentIsAvailableSpecification } from '../../../domain/specifications/EquipmentSpecifications';
+import { BookingCanBeCreatedSpecification } from '../../../domain/specifications/BookingSpecifications';
+import { Equipment } from '../../../domain/entities/Equipment';
 
 export class CreateBookingUseCase {
   constructor(

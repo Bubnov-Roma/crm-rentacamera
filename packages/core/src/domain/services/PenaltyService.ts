@@ -1,5 +1,5 @@
-import { Booking } from 'src/domain/entities/Booking';
-import { Money } from 'src/domain/value-objects/Money';
+import { Booking } from '../../domain/entities/Booking';
+import { Money } from '../../domain/value-objects/Money';
 
 export interface PenaltyCalculationResult {
   readonly penaltyAmount: Money;

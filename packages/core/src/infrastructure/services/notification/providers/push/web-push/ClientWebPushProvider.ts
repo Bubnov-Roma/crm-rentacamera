@@ -1,14 +1,14 @@
 import {
   NotificationMessage,
   NotificationProvider,
-} from 'src/infrastructure/types/notification-service-types';
+} from '../../../../../../infrastructure/types/notification-service-types';
 import { WebPushEnvironmentService } from './WebPushEnvironmentService';
 import {
   NotificationOptions,
   PushSubscriptionOptions,
   PushSubscriptionJSON,
   BrowserEnvironment,
-} from 'src/infrastructure/types/web-push-types';
+} from '../../../../../../infrastructure/types/web-push-types';
 
 export interface WebPushConfig {
   readonly vapidPublicKey: string;

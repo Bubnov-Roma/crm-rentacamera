@@ -1,5 +1,5 @@
-import { DomainBookingStatus } from 'src/infrastructure/types/booking-types';
-import { Booking } from 'src/domain/entities/Booking';
+import { DomainBookingStatus } from '../../../infrastructure/types/booking-types';
+import { Booking } from '../../../domain/entities/Booking';
 
 export interface IBookingRepository {
   findById(id: string): Promise<Booking | null>;

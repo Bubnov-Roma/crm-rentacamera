@@ -1,4 +1,4 @@
-import { DomainBookingStatus } from 'src/infrastructure/types/booking-types';
+import { DomainBookingStatus } from '../../infrastructure/types/booking-types';
 import { RentalPeriod } from '../value-objects/RentalPeriod';
 import { Money } from '../value-objects/Money';
 import {

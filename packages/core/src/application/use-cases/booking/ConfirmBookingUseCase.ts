@@ -1,7 +1,7 @@
-import { ConfirmBookingCommand } from 'src/application/commands/booking/ConfirmBookingCommand';
-import { IEventPublisher } from 'src/application/ports/events/IEventPublisher';
-import { IBookingRepository } from 'src/application/ports/repositories/IBookingRepository';
-import { INotificationService } from 'src/application/ports/services/INotificationService';
+import { ConfirmBookingCommand } from '../../../application/commands/booking/ConfirmBookingCommand';
+import { IEventPublisher } from '../../../application/ports/events/IEventPublisher';
+import { IBookingRepository } from '../../../application/ports/repositories/IBookingRepository';
+import { INotificationService } from '../../../application/ports/services/INotificationService';
 
 export class ConfirmBookingUseCase {
   constructor(

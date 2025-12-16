@@ -1,4 +1,4 @@
-import { IEventPublisher } from 'src/application/ports/events/IEventPublisher';
+import { IEventPublisher } from '../../application/ports/events/IEventPublisher';
 
 type EventHandler<T extends object> = (event: T) => Promise<void>;
 

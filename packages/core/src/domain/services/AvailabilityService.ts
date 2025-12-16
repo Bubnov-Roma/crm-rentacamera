@@ -1,7 +1,7 @@
-import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
+import { IEquipmentRepository } from '../../application/ports/repositories/IEquipmentRepository';
 import { LogisticsService } from './LogisticsService';
 import { RentalPoint } from '../entities/RentalPoint';
-import { ITransferRepository } from 'src/application/ports/repositories/ITransferRepository';
+import { ITransferRepository } from '../../application/ports/repositories/ITransferRepository';
 import { EquipmentTransfer } from '../entities/Transfer';
 export interface AvailabilityCheckResult {
   readonly isAvailable: boolean;

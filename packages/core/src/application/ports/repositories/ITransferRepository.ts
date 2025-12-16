@@ -1,4 +1,4 @@
-import { EquipmentTransfer } from 'src/domain/entities/Transfer';
+import { EquipmentTransfer } from '../../../domain/entities/Transfer';
 
 export interface ITransferRepository {
   save(transfer: EquipmentTransfer): Promise<void>;

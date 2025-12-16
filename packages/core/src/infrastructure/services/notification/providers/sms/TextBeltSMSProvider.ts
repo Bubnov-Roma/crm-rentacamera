@@ -1,7 +1,7 @@
 import {
   NotificationMessage,
   NotificationProvider,
-} from 'src/infrastructure/types/notification-service-types';
+} from '../../../../../infrastructure/types/notification-service-types';
 
 export class TextBeltSMSProvider implements NotificationProvider {
   constructor(private config: { apiKey?: string }) {}

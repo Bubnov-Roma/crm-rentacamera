@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { ITransferRepository } from 'src/application/ports/repositories/ITransferRepository';
-import { EquipmentTransfer, TransferData, TransferStatus } from 'src/domain/entities/Transfer';
+import { ITransferRepository } from '../../application/ports/repositories/ITransferRepository';
+import { EquipmentTransfer, TransferData, TransferStatus } from '../../domain/entities/Transfer';
 
 interface PrismaTransferData {
   readonly id: string;

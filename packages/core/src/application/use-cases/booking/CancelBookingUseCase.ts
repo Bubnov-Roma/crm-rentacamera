@@ -1,9 +1,9 @@
-import { CancelBookingCommand } from 'src/application/commands/booking/CancelBookingCommand';
-import { IEventPublisher } from 'src/application/ports/events/IEventPublisher';
-import { IBookingRepository } from 'src/application/ports/repositories/IBookingRepository';
-import { IUserRepository } from 'src/application/ports/repositories/IUserRepository';
-import { INotificationService } from 'src/application/ports/services/INotificationService';
-import { PenaltyService } from 'src/domain/services/PenaltyService';
+import { CancelBookingCommand } from '../../../application/commands/booking/CancelBookingCommand';
+import { IEventPublisher } from '../../../application/ports/events/IEventPublisher';
+import { IBookingRepository } from '../../../application/ports/repositories/IBookingRepository';
+import { IUserRepository } from '../../../application/ports/repositories/IUserRepository';
+import { INotificationService } from '../../../application/ports/services/INotificationService';
+import { PenaltyService } from '../../../domain/services/PenaltyService';
 
 export class CancelBookingUseCase {
   constructor(

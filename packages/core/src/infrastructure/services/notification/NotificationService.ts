@@ -1,4 +1,4 @@
-import { User } from 'src/domain/entities/User';
+import { User } from '../../../domain/entities/User';
 import {
   MassagerType,
   NotificationConfig,
@@ -9,16 +9,16 @@ import {
 import { ResendEmailProvider } from './providers/email/ResendEmailProvider';
 import { TelegramProvider } from './providers/telegram/TelegramProvider';
 import { TextBeltSMSProvider } from './providers/sms/TextBeltSMSProvider';
-import { Booking } from 'src/domain/entities/Booking';
-import { PenaltyCalculationResult } from 'src/domain/services/PenaltyService';
-import { INotificationService } from 'src/application/ports/services/INotificationService';
-import { Equipment } from 'src/domain/entities/Equipment';
-import { RentalPoint } from 'src/domain/entities/RentalPoint';
+import { Booking } from '../../../domain/entities/Booking';
+import { PenaltyCalculationResult } from '../../../domain/services/PenaltyService';
+import { INotificationService } from '../../../application/ports/services/INotificationService';
+import { Equipment } from '../../../domain/entities/Equipment';
+import { RentalPoint } from '../../../domain/entities/RentalPoint';
 import {
   NotificationRecipient,
   RecipientFactory,
-} from 'src/domain/value-objects/NotificationRecipient';
-import { WebPushProviderFactory } from 'src/infrastructure/services/notification/providers/push/web-push/WebPushProviderFactory';
+} from '../../../domain/value-objects/NotificationRecipient';
+import { WebPushProviderFactory } from '../../../infrastructure/services/notification/providers/push/web-push/WebPushProviderFactory';
 import { BookingTemplates } from './templates/BookingTemplates';
 
 export class NotificationService implements INotificationService {

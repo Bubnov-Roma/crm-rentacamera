@@ -1,4 +1,4 @@
-import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
+import { IEquipmentRepository } from '../../application/ports/repositories/IEquipmentRepository';
 import { RentalPeriod } from '../value-objects/RentalPeriod';
 
 export class EquipmentIsAvailableSpecification {

@@ -1,10 +1,10 @@
-import { TransferEquipmentCommand } from 'src/application/commands/booking/TransferEquipmentCommand';
-import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
-import { IRentalPointRepository } from 'src/application/ports/repositories/IRentalPointRepository';
-import { ITransferRepository } from 'src/application/ports/repositories/ITransferRepository';
-import { EquipmentTransfer } from 'src/domain/entities/Transfer';
-import { INotificationService } from 'src/application/ports/services/INotificationService';
-import { LogisticsService } from 'src/domain/services/LogisticsService';
+import { TransferEquipmentCommand } from '../../../application/commands/booking/TransferEquipmentCommand';
+import { IEquipmentRepository } from '../../../application/ports/repositories/IEquipmentRepository';
+import { IRentalPointRepository } from '../../../application/ports/repositories/IRentalPointRepository';
+import { ITransferRepository } from '../../../application/ports/repositories/ITransferRepository';
+import { EquipmentTransfer } from '../../../domain/entities/Transfer';
+import { INotificationService } from '../../../application/ports/services/INotificationService';
+import { LogisticsService } from '../../../domain/services/LogisticsService';
 
 export class TransferEquipmentUseCase {
   constructor(

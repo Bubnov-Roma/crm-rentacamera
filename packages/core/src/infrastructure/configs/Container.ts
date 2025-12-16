@@ -1,33 +1,33 @@
 import { PrismaClient } from '@prisma/client';
 
 // Ports
-import { IBookingRepository } from 'src/application/ports/repositories/IBookingRepository';
-import { IUserRepository } from 'src/application/ports/repositories/IUserRepository';
-import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
-import { ITransferRepository } from 'src/application/ports/repositories/ITransferRepository';
-import { IRentalPointRepository } from 'src/application/ports/repositories/IRentalPointRepository';
-import { IEventPublisher } from 'src/application/ports/events/IEventPublisher';
+import { IBookingRepository } from '../../application/ports/repositories/IBookingRepository';
+import { IUserRepository } from '../../application/ports/repositories/IUserRepository';
+import { IEquipmentRepository } from '../../application/ports/repositories/IEquipmentRepository';
+import { ITransferRepository } from '../../application/ports/repositories/ITransferRepository';
+import { IRentalPointRepository } from '../../application/ports/repositories/IRentalPointRepository';
+import { IEventPublisher } from '../../application/ports/events/IEventPublisher';
 // Repositories
-import { PrismaBookingRepository } from 'src/infrastructure/repositories/PrismaBookingRepository';
-import { PrismaUserRepository } from 'src/infrastructure/repositories/PrismaUserRepository';
-import { PrismaEquipmentRepository } from 'src/infrastructure/repositories/PrismaEquipmentRepository';
-import { PrismaTransferRepository } from 'src/infrastructure/repositories/PrismaTransferRepository';
-import { PrismaRentalPointRepository } from 'src/infrastructure/repositories/PrismaRentalPointRepository';
+import { PrismaBookingRepository } from '../../infrastructure/repositories/PrismaBookingRepository';
+import { PrismaUserRepository } from '../../infrastructure/repositories/PrismaUserRepository';
+import { PrismaEquipmentRepository } from '../../infrastructure/repositories/PrismaEquipmentRepository';
+import { PrismaTransferRepository } from '../../infrastructure/repositories/PrismaTransferRepository';
+import { PrismaRentalPointRepository } from '../../infrastructure/repositories/PrismaRentalPointRepository';
 // Use Cases
-import { CreateBookingUseCase } from 'src/application/use-cases/booking/CreateBookingUseCase';
-import { ConfirmBookingUseCase } from 'src/application/use-cases/booking/ConfirmBookingUseCase';
-import { CancelBookingUseCase } from 'src/application/use-cases/booking/CancelBookingUseCase';
-import { TransferEquipmentUseCase } from 'src/application/use-cases/booking/TransferEquipmentUseCase';
+import { CreateBookingUseCase } from '../../application/use-cases/booking/CreateBookingUseCase';
+import { ConfirmBookingUseCase } from '../../application/use-cases/booking/ConfirmBookingUseCase';
+import { CancelBookingUseCase } from '../../application/use-cases/booking/CancelBookingUseCase';
+import { TransferEquipmentUseCase } from '../../application/use-cases/booking/TransferEquipmentUseCase';
 // Domain Services
-import { PricingService } from 'src/domain/services/PricingService';
-import { AvailabilityService } from 'src/domain/services/AvailabilityService';
-import { PenaltyService } from 'src/domain/services/PenaltyService';
-import { LogisticsService } from 'src/domain/services/LogisticsService';
+import { PricingService } from '../../domain/services/PricingService';
+import { AvailabilityService } from '../../domain/services/AvailabilityService';
+import { PenaltyService } from '../../domain/services/PenaltyService';
+import { LogisticsService } from '../../domain/services/LogisticsService';
 // Infrastructure Services
-import { NotificationService } from 'src/infrastructure/services/notification/NotificationService';
-import { INotificationService } from 'src/application/ports/services/INotificationService';
+import { NotificationService } from '../../infrastructure/services/notification/NotificationService';
+import { INotificationService } from '../../application/ports/services/INotificationService';
 import { SimpleEventPublisher } from '../events/SimpleEventPublisher';
-import { BookingEventHandler } from 'src/application/event-handlers/BookingEventHandler';
+import { BookingEventHandler } from '../../application/event-handlers/BookingEventHandler';
 // Events
 import {
   BookingCreatedEvent,
@@ -35,7 +35,7 @@ import {
   BookingCancelledEvent,
   BookingCompletedEvent,
   BookingActivatedEvent,
-} from 'src/domain/events/BookingEvents';
+} from '../../domain/events/BookingEvents';
 // Config
 import { notificationConfig } from './notification.config';
 interface ContainerDependencies {

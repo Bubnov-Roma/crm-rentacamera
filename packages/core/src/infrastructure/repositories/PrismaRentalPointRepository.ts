@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { IRentalPointRepository } from 'src/application/ports/repositories/IRentalPointRepository';
-import { RentalPoint, RentalPointData } from 'src/domain/entities/RentalPoint';
+import { IRentalPointRepository } from '../../application/ports/repositories/IRentalPointRepository';
+import { RentalPoint, RentalPointData } from '../../domain/entities/RentalPoint';
 
 export class PrismaRentalPointRepository implements IRentalPointRepository {
   constructor(private readonly prisma: PrismaClient) {}

@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import { Booking } from 'src/domain/entities/Booking';
-import { IBookingRepository } from 'src/application/ports/repositories/IBookingRepository';
+import { Booking } from '../../domain/entities/Booking';
+import { IBookingRepository } from '../../application/ports/repositories/IBookingRepository';
 import { DomainBookingStatus, PrismaBookingType, StatusMapper } from '../types/booking-types';
-import { RentalPeriod } from 'src/domain/value-objects/RentalPeriod';
-import { Money } from 'src/domain/value-objects/Money';
+import { RentalPeriod } from '../../domain/value-objects/RentalPeriod';
+import { Money } from '../../domain/value-objects/Money';
 
 export class PrismaBookingRepository implements IBookingRepository {
   constructor(private prisma: PrismaClient) {}

@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
+import { IEquipmentRepository } from '../../application/ports/repositories/IEquipmentRepository';
 import {
   Equipment,
   EquipmentData,
   EquipmentSpecifications,
   EquipmentStatus,
-} from 'src/domain/entities/Equipment';
-import { Money } from 'src/domain/value-objects/Money';
+} from '../../domain/entities/Equipment';
+import { Money } from '../../domain/value-objects/Money';
 
 export interface PrismaEquipment {
   readonly id: string;

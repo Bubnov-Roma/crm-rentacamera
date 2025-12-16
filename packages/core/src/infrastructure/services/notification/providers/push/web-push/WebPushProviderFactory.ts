@@ -1,7 +1,7 @@
 import {
   NotificationProvider,
   PushProviderConfig,
-} from 'src/infrastructure/types/notification-service-types';
+} from '../../../../../../infrastructure/types/notification-service-types';
 import { ClientWebPushProvider, WebPushConfig } from './ClientWebPushProvider';
 import { ServerWebPushProvider, ServerWebPushConfig } from './ServerWebPushProvider';
 

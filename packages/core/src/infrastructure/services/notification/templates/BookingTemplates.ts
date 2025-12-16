@@ -1,4 +1,4 @@
-import { NotificationTemplate } from 'src/infrastructure/types/notification-service-types';
+import { NotificationTemplate } from '../../../../infrastructure/types/notification-service-types';
 
 export const BookingTemplates: Record<string, NotificationTemplate> = {
   CONFIRMATION: {

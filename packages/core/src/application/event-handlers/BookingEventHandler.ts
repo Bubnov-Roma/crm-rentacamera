@@ -4,7 +4,7 @@ import {
   BookingCompletedEvent,
   BookingConfirmedEvent,
   BookingCreatedEvent,
-} from 'src/domain/events/BookingEvents';
+} from '../../domain/events/BookingEvents';
 import { IBookingRepository } from '../ports/repositories/IBookingRepository';
 import { IUserRepository } from '../ports/repositories/IUserRepository';
 import { INotificationService } from '../ports/services/INotificationService';

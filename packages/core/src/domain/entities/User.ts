@@ -1,4 +1,4 @@
-import { UserRole, UserType } from 'src/infrastructure/types/user-types';
+import { UserRole, UserType } from '../../infrastructure/types/user-types';
 
 export class User {
   constructor(private profile: UserType) {}

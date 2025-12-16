@@ -1,4 +1,4 @@
-import { RentalPoint } from 'src/domain/entities/RentalPoint';
+import { RentalPoint } from '../../../domain/entities/RentalPoint';
 
 export interface IRentalPointRepository {
   findById(id: string): Promise<RentalPoint | null>;
