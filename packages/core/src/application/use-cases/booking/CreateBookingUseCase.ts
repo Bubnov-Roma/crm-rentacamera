@@ -11,6 +11,7 @@ import { IEventPublisher } from 'src/application/ports/events/IEventPublisher';
 import { UserCanMakeBookingSpecification } from 'src/domain/specifications/UserSpecifications';
 import { EquipmentIsAvailableSpecification } from 'src/domain/specifications/EquipmentSpecifications';
 import { BookingCanBeCreatedSpecification } from 'src/domain/specifications/BookingSpecifications';
+import { Equipment } from 'src/domain/entities/Equipment';
 
 export class CreateBookingUseCase {
   constructor(
@@ -34,7 +35,7 @@ export class CreateBookingUseCase {
     }
     // 2. Check equipment available
     const period = new RentalPeriod(command.startDate, command.endDate);
-    const equipmentItems = [];
+    const equipmentItems: Equipment[] = [];
 
     for (const item of command.equipmentItems) {
       const equipmentAvailable = await new EquipmentIsAvailableSpecification(
