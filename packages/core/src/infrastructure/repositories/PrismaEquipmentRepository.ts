@@ -1,4 +1,4 @@
-import { PrismaClient, Equipment as PrismaEquipmentModel } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { IEquipmentRepository } from 'src/application/ports/repositories/IEquipmentRepository';
 import {
   Equipment,
@@ -47,7 +47,7 @@ export interface PrismaEquipment {
   }>;
 }
 
-export type PrismaEquipmentWithRelations = PrismaEquipmentModel & {
+export type PrismaEquipmentWithRelations = PrismaEquipment & {
   category: {
     id: string;
     name: string;
