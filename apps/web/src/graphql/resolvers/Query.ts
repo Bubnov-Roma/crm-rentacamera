@@ -1,7 +1,7 @@
 import { GraphQLContext } from '../context';
 
 type EquipmentListArgs = {
-  filters?: { categoryId?: string } | null;
+  filters: { categoryId: string };
   _pagination?: { first?: number; after?: string } | null;
 };
 
