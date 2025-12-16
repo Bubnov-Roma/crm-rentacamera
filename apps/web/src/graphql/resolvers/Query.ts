@@ -82,30 +82,30 @@ export const Query = {
   },
 
   // Availability
-  // async checkAvailability(
-  //   _: unknown,
-  //   {
-  //     equipmentId,
-  //     period,
-  //     locationId,
-  //   }: { equipmentId: string; period: { startDate: string; endDate: string }; locationId: string },
-  //   ctx: GraphQLContext,
-  // ) {
-  //   const result = await ctx.availabilityService.checkEquipmentAvailability({
-  //     equipmentInstanceId: equipmentId,
-  //     requestedLocationId: locationId,
-  //     startDate: period.startDate,
-  //     endDate: period.endDate,
-  //   });
+  async checkAvailability(
+    _: unknown,
+    {
+      equipmentId,
+      period,
+      locationId,
+    }: { equipmentId: string; period: { startDate: Date; endDate: Date }; locationId: string },
+    ctx: GraphQLContext,
+  ) {
+    const result = await ctx.availabilityService.checkEquipmentAvailability({
+      equipmentInstanceId: equipmentId,
+      requestedLocationId: locationId,
+      startDate: period.startDate,
+      endDate: period.endDate,
+    });
 
-  //   return {
-  //     isAvailable: result.isAvailable,
-  //     availableFrom: result.availableFrom,
-  //     message: result.isAvailable
-  //       ? 'Equipment is available'
-  //       : 'Equipment is not available for the selected period',
-  //   };
-  // },
+    return {
+      isAvailable: result.isAvailable,
+      availableFrom: result.availableFrom,
+      message: result.isAvailable
+        ? 'Equipment is available'
+        : 'Equipment is not available for the selected period',
+    };
+  },
 
   // User
   async me(_: unknown, __: unknown, ctx: GraphQLContext) {
